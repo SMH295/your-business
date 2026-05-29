@@ -9,10 +9,13 @@
     "preview": "cross-env ELECTRON_RUN_AS_NODE=0 electron-vite preview",
     "dist": "cross-env ELECTRON_RUN_AS_NODE=0 electron-vite build && electron-builder",
     "rebuild": "electron-rebuild -f -w better-sqlite3",
-    "postinstall": "electron-rebuild -f -w better-sqlite3"
+    "postinstall": "electron-rebuild -f -w better-sqlite3",
+    "publish-app": "node publish.js"
   },
   "dependencies": {
     "better-sqlite3": "^9.4.3",
+    "dotenv": "^17.4.2",
+    "electron-updater": "^6.8.3",
     "firebase": "^12.13.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
@@ -41,6 +44,11 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "SMH295",
+      "repo": "your-business"
     }
   }
 }

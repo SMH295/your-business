@@ -6,7 +6,8 @@ contextBridge.exposeInMainWorld('api', {
   },
   negocio: {
     get: () => ipcRenderer.invoke('negocio:get'),
-    create: (data) => ipcRenderer.invoke('negocio:create', data)
+    create: (data) => ipcRenderer.invoke('negocio:create', data),
+    update: (data) => ipcRenderer.invoke('negocio:update', data)
   },
   productos: {
     getAll: () => ipcRenderer.invoke('productos:getAll'),

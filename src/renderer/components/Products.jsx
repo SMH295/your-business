@@ -121,9 +121,9 @@ export default function Products() {
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-200 bg-white space-y-3">
+      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 space-y-3">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-gray-900">Productos</h1>
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Productos</h1>
           <Button variant="primary" onClick={() => setModal('add')}>+ Agregar producto</Button>
         </div>
         <input
@@ -131,30 +131,30 @@ export default function Products() {
           value={busqueda}
           onChange={e => setBusqueda(e.target.value)}
           placeholder="Buscar producto..."
-          className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
         />
       </div>
 
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-gray-900">
         {productos.length === 0 ? (
           <EmptyState icon="📦" message="Aún no tenés productos. ¡Agregá tu primero!" />
         ) : productosFiltrados.length === 0 ? (
           <p className="text-sm text-gray-400 text-center mt-10">No se encontraron productos.</p>
         ) : (
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wide">Nombre</th>
-                  <th className="text-right px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wide">Precio</th>
-                  <th className="text-right px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wide">Acciones</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400 uppercase text-xs tracking-wide">Nombre</th>
+                  <th className="text-right px-4 py-3 font-medium text-gray-500 dark:text-gray-400 uppercase text-xs tracking-wide">Precio</th>
+                  <th className="text-right px-4 py-3 font-medium text-gray-500 dark:text-gray-400 uppercase text-xs tracking-wide">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {productosFiltrados.map((p) => (
-                  <tr key={p.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 font-medium text-gray-900">{p.nombre}</td>
-                    <td className="px-4 py-3 text-right text-gray-700">{fmt(p.precio)}</td>
+                  <tr key={p.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{p.nombre}</td>
+                    <td className="px-4 py-3 text-right text-gray-700 dark:text-gray-300">{fmt(p.precio)}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex justify-end gap-2">
                         <button

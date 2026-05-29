@@ -8,12 +8,14 @@ import Sales from './components/Sales'
 import Products from './components/Products'
 import History from './components/History'
 import Board from './components/Board'
+import Settings from './components/Settings'
 
 const NAV = [
-  { id: 'sales',    label: 'Ventas',    icon: '🛒' },
-  { id: 'products', label: 'Productos', icon: '📦' },
-  { id: 'history',  label: 'Historial', icon: '📋' },
-  { id: 'board',    label: 'Tablero',   icon: '📌' }
+  { id: 'sales',    label: 'Ventas',         icon: '🛒' },
+  { id: 'products', label: 'Productos',       icon: '📦' },
+  { id: 'history',  label: 'Historial',       icon: '📋' },
+  { id: 'board',    label: 'Tablero',         icon: '📌' },
+  { id: 'settings', label: 'Configuración',   icon: '⚙️' },
 ]
 
 export default function App() {
@@ -23,8 +25,15 @@ export default function App() {
   const [status,      setStatus]      = useState('loading')
   const [negocio,     setNegocio]     = useState(null)
   const [activeTab,   setActiveTab]   = useState('sales')
+  const [darkMode,    setDarkMode]    = useState(() => localStorage.getItem('theme') === 'dark')
 
-  // Watch Firebase auth state on every startup
+  // Apply dark class to <html> whenever darkMode changes
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', darkMode)
+    localStorage.setItem('theme', darkMode ? 'dark' : 'light')
+  }, [darkMode])
+
+  // Watch Firebase auth state
   useEffect(() => {
     return onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -38,9 +47,7 @@ export default function App() {
             setAuthLoading(false)
             return
           }
-        } catch (_) {
-          // If offline, allow access — device was verified on last successful login
-        }
+        } catch (_) {}
         setAuthUser(user)
       } else {
         setAuthUser(null)
@@ -59,37 +66,33 @@ export default function App() {
     })
   }, [authUser])
 
-  if (authLoading) {
-    return (
-      <div className="flex items-center justify-center h-full bg-gray-50">
-        <p className="text-gray-400 text-sm">Iniciando...</p>
-      </div>
-    )
-  }
+  if (authLoading) return (
+    <div className="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-900">
+      <p className="text-gray-400 text-sm">Iniciando...</p>
+    </div>
+  )
 
-  if (!authUser) {
-    return <Auth onAuth={(user) => { setDeviceError(''); setAuthUser(user) }} deviceError={deviceError} />
-  }
+  if (!authUser) return (
+    <Auth onAuth={(user) => { setDeviceError(''); setAuthUser(user) }} deviceError={deviceError} />
+  )
 
-  if (status === 'loading') {
-    return (
-      <div className="flex items-center justify-center h-full bg-gray-50">
-        <p className="text-gray-400 text-sm">Cargando...</p>
-      </div>
-    )
-  }
+  if (status === 'loading') return (
+    <div className="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-900">
+      <p className="text-gray-400 text-sm">Cargando...</p>
+    </div>
+  )
 
-  if (status === 'setup') {
-    return <Setup onComplete={(n) => { setNegocio(n); setStatus('ready') }} />
-  }
+  if (status === 'setup') return (
+    <Setup onComplete={(n) => { setNegocio(n); setStatus('ready') }} />
+  )
 
   return (
-    <div className="flex h-full bg-gray-50 overflow-hidden">
+    <div className="flex h-full bg-gray-50 dark:bg-gray-900 overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-52 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col">
-        <div className="px-5 py-5 border-b border-gray-100">
+      <aside className="w-52 flex-shrink-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+        <div className="px-5 py-5 border-b border-gray-100 dark:border-gray-700">
           <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">Tu negocio</p>
-          <p className="text-sm font-semibold text-gray-900 mt-0.5 truncate">{negocio?.nombre}</p>
+          <p className="text-sm font-semibold text-gray-900 dark:text-white mt-0.5 truncate">{negocio?.nombre}</p>
         </div>
         <nav className="flex-1 p-3 space-y-1">
           {NAV.map((item) => (
@@ -98,8 +101,8 @@ export default function App() {
               onClick={() => setActiveTab(item.id)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors text-left ${
                 activeTab === item.id
-                  ? 'bg-primary-light text-primary'
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-primary-light text-primary dark:bg-primary/20'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
             >
               <span>{item.icon}</span>
@@ -107,7 +110,7 @@ export default function App() {
             </button>
           ))}
         </nav>
-        <div className="p-4 border-t border-gray-100 space-y-2">
+        <div className="p-4 border-t border-gray-100 dark:border-gray-700 space-y-2">
           <button
             onClick={() => signOut(auth)}
             className="w-full text-xs text-gray-400 hover:text-red-500 transition-colors text-center py-1"
@@ -124,6 +127,14 @@ export default function App() {
         {activeTab === 'products' && <Products />}
         {activeTab === 'history'  && <History />}
         {activeTab === 'board'    && <Board />}
+        {activeTab === 'settings' && (
+          <Settings
+            negocio={negocio}
+            onNegocioUpdate={(n) => setNegocio(n)}
+            darkMode={darkMode}
+            onToggleDark={() => setDarkMode(v => !v)}
+          />
+        )}
       </main>
     </div>
   )

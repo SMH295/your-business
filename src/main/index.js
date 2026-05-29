@@ -1,4 +1,5 @@
-const { app, BrowserWindow, shell, ipcMain } = require('electron')
+const { app, BrowserWindow, shell, ipcMain, dialog } = require('electron')
+const { autoUpdater } = require('electron-updater')
 const path = require('path')
 const fs = require('fs')
 const { randomUUID } = require('crypto')
@@ -60,6 +61,13 @@ function registerHandlers() {
   ipcMain.handle('negocio:get', () => {
     try { return db.prepare('SELECT * FROM negocio LIMIT 1').get() || null }
     catch (err) { console.error('negocio:get', err); throw err }
+  })
+
+  ipcMain.handle('negocio:update', (_e, { nombre }) => {
+    try {
+      db.prepare('UPDATE negocio SET nombre = ? WHERE id = 1').run(nombre)
+      return db.prepare('SELECT * FROM negocio LIMIT 1').get()
+    } catch (err) { console.error('negocio:update', err); throw err }
   })
 
   ipcMain.handle('negocio:create', (_e, { nombre }) => {
@@ -181,10 +189,28 @@ function createWindow() {
   }
 }
 
+function setupUpdater() {
+  autoUpdater.checkForUpdatesAndNotify()
+
+  autoUpdater.on('update-downloaded', () => {
+    dialog.showMessageBox({
+      type: 'info',
+      title: 'Actualización lista',
+      message: 'Hay una nueva versión de Your Business lista para instalar.',
+      detail: '¿Querés reiniciar ahora para actualizar?',
+      buttons: ['Reiniciar ahora', 'Después'],
+      defaultId: 0
+    }).then(({ response }) => {
+      if (response === 0) autoUpdater.quitAndInstall()
+    })
+  })
+}
+
 app.whenReady().then(() => {
   initDb()
   registerHandlers()
   createWindow()
+  if (app.isPackaged) setupUpdater()
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

@@ -219,9 +219,9 @@ export default function Board() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between flex-shrink-0">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between flex-shrink-0">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">Tablero de Pedidos</h1>
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Tablero de Pedidos</h1>
           <p className="text-xs text-gray-400 mt-0.5">
             {pendingCount} por hacer
             {doneCount > 0 && ` · ${doneCount} hechos`}
