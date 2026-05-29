@@ -5,12 +5,12 @@ import EmptyState from './ui/EmptyState'
 const ROTATIONS = ['-2deg', '1.5deg', '-0.8deg', '2.3deg', '-1.6deg', '1.2deg', '-2.4deg', '0.6deg']
 
 function fmt(n) {
-  return Number(n).toLocaleString('es-AR')
+  return Number(n).toLocaleString('es-CO')
 }
 
 function formatTime(str) {
   if (!str) return ''
-  return new Date(str).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
+  return new Date(str).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
 }
 
 function Thumbtack() {

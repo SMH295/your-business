@@ -4,15 +4,15 @@ import EmptyState from './ui/EmptyState'
 import ConfirmDialog from './ui/ConfirmDialog'
 
 function fmt(n) {
-  return Number(n).toLocaleString('es-AR')
+  return Number(n).toLocaleString('es-CO')
 }
 
 function formatTime(datetimeStr) {
-  return new Date(datetimeStr).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
+  return new Date(datetimeStr).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
 }
 
 function formatDate() {
-  return new Date().toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+  return new Date().toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
 }
 
 export default function History() {

@@ -5,10 +5,10 @@ import EmptyState from './ui/EmptyState'
 import ConfirmDialog from './ui/ConfirmDialog'
 
 function fmt(n) {
-  return Number(n).toLocaleString('es-AR')
+  return Number(n).toLocaleString('es-CO')
 }
 
-// Parsea números en formato argentino: 22.000 → 22000 | 22,50 → 22.5 | 1.234,56 → 1234.56
+// Parsea números en formato colombiano: 22.000 → 22000 | 22,50 → 22.5 | 1.234,56 → 1234.56
 function parsePrecio(str) {
   str = String(str).trim().replace(/[^\d.,]/g, '')
   if (!str) return NaN

@@ -4,7 +4,7 @@ import EmptyState from './ui/EmptyState'
 import Toast from './ui/Toast'
 
 function fmt(n) {
-  return Number(n).toLocaleString('es-AR')
+  return Number(n).toLocaleString('es-CO')
 }
 
 export default function Sales() {
