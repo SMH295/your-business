@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Business — Sistema POS para tu negocio</title>
+  <link rel="icon" type="image/png" href="logo-icon.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-50:  #f0fdf4;
+      --green-100: #dcfce7;
+      --green-400: #4ade80;
+      --green-500: #22c55e;
+      --green-600: #16a34a;
+      --green-700: #15803d;
+      --green-800: #166534;
+      --green-900: #14532d;
+      --gray-50:   #f9fafb;
+      --gray-100:  #f3f4f6;
+      --gray-200:  #e5e7eb;
+      --gray-400:  #9ca3af;
+      --gray-600:  #4b5563;
+      --gray-700:  #374151;
+      --gray-900:  #111827;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--gray-700);
+      background: #fff;
+      line-height: 1.6;
+    }
+
+    /* ── NAV ─────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .nav-logo img {
+      height: 32px;
+      width: 32px;
+      border-radius: 8px;
+    }
+    .nav-logo span {
+      font-weight: 700;
+      font-size: 17px;
+      color: var(--gray-900);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--gray-600);
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--green-600); }
+    .btn-nav {
+      background: var(--green-600);
+      color: #fff !important;
+      padding: 8px 18px;
+      border-radius: 8px;
+      transition: background .2s !important;
+    }
+    .btn-nav:hover { background: var(--green-700) !important; color: #fff !important; }
+
+    /* ── HERO ────────────────────────────── */
+    .hero {
+      background: linear-gradient(160deg, var(--green-50) 0%, #fff 60%);
+      padding: 96px 24px 80px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--green-100);
+      color: var(--green-800);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 999px;
+      margin-bottom: 28px;
+    }
+    .hero-logo {
+      width: 360px;
+      height: 360px;
+      border-radius: 60px;
+      box-shadow: 0 20px 60px rgba(22,163,74,.25);
+      margin: 0 auto 36px;
+      display: block;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-weight: 800;
+      color: var(--gray-900);
+      line-height: 1.15;
+      max-width: 740px;
+      margin: 0 auto 20px;
+    }
+    .hero h1 span { color: var(--green-600); }
+    .hero p {
+      font-size: 1.125rem;
+      color: var(--gray-600);
+      max-width: 540px;
+      margin: 0 auto 40px;
+    }
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform .15s, box-shadow .15s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.12); }
+    .btn-primary {
+      background: var(--green-600);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(22,163,74,.35);
+    }
+    .btn-primary:hover { background: var(--green-700); }
+    .btn-secondary {
+      background: #fff;
+      color: var(--gray-700);
+      border: 1.5px solid var(--gray-200);
+    }
+    .hero-note {
+      margin-top: 18px;
+      font-size: 13px;
+      color: var(--gray-400);
+    }
+
+    /* ── APP PREVIEW ─────────────────────── */
+    .preview {
+      background: var(--gray-50);
+      padding: 64px 24px;
+      border-top: 1px solid var(--gray-100);
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .preview-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .preview-mockup {
+      background: #fff;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 16px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.09);
+      overflow: hidden;
+    }
+    .mockup-bar {
+      background: var(--gray-100);
+      padding: 10px 16px;
+      display: flex;
+      gap: 7px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .mockup-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+    }
+    .mockup-screen {
+      display: flex;
+      height: 380px;
+    }
+    .mockup-sidebar {
+      width: 180px;
+      background: #fff;
+      border-right: 1px solid var(--gray-200);
+      padding: 16px 12px;
+      flex-shrink: 0;
+    }
+    .mockup-sidebar-title {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--gray-400);
+      margin-bottom: 4px;
+      padding: 0 8px;
+    }
+    .mockup-sidebar-biz {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gray-900);
+      padding: 0 8px;
+      margin-bottom: 16px;
+    }
+    .mockup-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+    .mockup-nav-item.active {
+      background: var(--green-50);
+      color: var(--green-700);
+      font-weight: 600;
+    }
+    .mockup-nav-item:not(.active) { color: var(--gray-600); }
+    .mockup-content {
+      flex: 1;
+      padding: 20px;
+      overflow: hidden;
+    }
+    .mockup-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .mockup-card {
+      background: var(--gray-50);
+      border: 1.5px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 12px;
+    }
+    .mockup-card-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-800);
+      margin-bottom: 4px;
+    }
+    .mockup-card-price {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--green-600);
+    }
+    .mockup-search {
+      background: var(--gray-50);
+      border: 1.5px solid var(--gray-200);
+      border-radius: 7px;
+      padding: 7px 12px;
+      font-size: 11px;
+      color: var(--gray-400);
+      width: 100%;
+    }
+
+    /* ── FEATURES ────────────────────────── */
+    .features {
+      padding: 96px 24px;
+    }
+    .section-tag {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--green-600);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      text-align: center;
+      font-size: clamp(1.5rem, 3vw, 2.25rem);
+      font-weight: 800;
+      color: var(--gray-900);
+      margin-bottom: 12px;
+    }
+    .section-sub {
+      text-align: center;
+      color: var(--gray-600);
+      font-size: 1.05rem;
+      max-width: 520px;
+      margin: 0 auto 64px;
+    }
+    .features-grid {
+      max-width: 1060px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 28px;
+    }
+    .feature-card {
+      background: #fff;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 16px;
+      padding: 32px 28px;
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+    }
+    .feature-card:hover {
+      border-color: var(--green-400);
+      box-shadow: 0 12px 40px rgba(34,197,94,.1);
+      transform: translateY(-4px);
+    }
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: var(--green-50);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .feature-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 8px;
+    }
+    .feature-desc {
+      font-size: 14px;
+      color: var(--gray-600);
+      line-height: 1.65;
+    }
+
+    /* ── HOW IT WORKS ────────────────────── */
+    .how {
+      background: var(--green-800);
+      padding: 96px 24px;
+      color: #fff;
+    }
+    .how .section-tag { color: var(--green-400); }
+    .how .section-title { color: #fff; }
+    .how .section-sub { color: rgba(255,255,255,.65); }
+    .steps {
+      max-width: 880px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      position: relative;
+    }
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 28px 20px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+    }
+    .step-num {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--green-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+    .step-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+    .step-desc {
+      font-size: 13px;
+      color: rgba(255,255,255,.6);
+      line-height: 1.6;
+    }
+
+    /* ── DOWNLOAD ────────────────────────── */
+    .download {
+      padding: 96px 24px;
+      text-align: center;
+      background: linear-gradient(160deg, #fff 0%, var(--green-50) 100%);
+    }
+    .download-logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(22,163,74,.2);
+      margin: 0 auto 32px;
+      display: block;
+    }
+    .download h2 {
+      font-size: clamp(1.5rem, 3vw, 2.25rem);
+      font-weight: 800;
+      color: var(--gray-900);
+      margin-bottom: 14px;
+    }
+    .download p {
+      color: var(--gray-600);
+      margin-bottom: 36px;
+      max-width: 460px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .sys-reqs {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-top: 32px;
+    }
+    .req {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      color: var(--gray-500);
+    }
+    .req-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green-500);
+    }
+
+    /* ── FOOTER ──────────────────────────── */
+    footer {
+      background: var(--gray-900);
+      color: rgba(255,255,255,.45);
+      text-align: center;
+      padding: 32px 24px;
+      font-size: 13px;
+    }
+    footer strong { color: rgba(255,255,255,.8); }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .mockup-sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <img src="logo-icon.png" alt="Your Business" />
+      <span>Your Business</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">Funciones</a></li>
+      <li><a href="#how">Cómo funciona</a></li>
+      <li><a href="#download" class="btn-nav">Descargar gratis</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <img src="logo-full.png" alt="Your Business" class="hero-logo" />
+  <h1>El sistema POS que<br><span>tu negocio necesitaba</span></h1>
+  <p>Registrá ventas, gestioná tus productos y controlá tus pedidos desde una app de escritorio simple, rápida y sin internet.</p>
+  <div class="hero-actions">
+    <a href="#download" class="btn btn-primary">
+      ⬇ Descargar gratis
+    </a>
+    <a href="#features" class="btn btn-secondary">
+      Ver funciones
+    </a>
+  </div>
+  <p class="hero-note">Solo para Windows · Sin suscripciones · Sin internet requerido</p>
+</section>
+
+<!-- APP PREVIEW -->
+<section class="preview">
+  <div class="preview-inner">
+    <div class="preview-mockup">
+      <div class="mockup-bar">
+        <div class="mockup-dot" style="background:#ff5f57"></div>
+        <div class="mockup-dot" style="background:#ffbd2e"></div>
+        <div class="mockup-dot" style="background:#28c840"></div>
+      </div>
+      <div class="mockup-screen">
+        <div class="mockup-sidebar">
+          <div class="mockup-sidebar-title">Tu negocio</div>
+          <div class="mockup-sidebar-biz">Mi Hamburguesería</div>
+          <div class="mockup-nav-item active">🛒 Ventas</div>
+          <div class="mockup-nav-item">📦 Productos</div>
+          <div class="mockup-nav-item">📋 Historial</div>
+          <div class="mockup-nav-item">📌 Tablero</div>
+        </div>
+        <div class="mockup-content">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <span style="font-size:13px;font-weight:700;color:#111827">Catálogo</span>
+            <span style="font-size:11px;color:#9ca3af">3 productos encontrados</span>
+          </div>
+          <div class="mockup-search">🔍 Buscar producto...</div>
+          <div class="mockup-grid">
+            <div class="mockup-card">
+              <div class="mockup-card-name">Hamburguesa clásica</div>
+              <div class="mockup-card-price">$3.500</div>
+            </div>
+            <div class="mockup-card" style="border-color:#22c55e;background:#f0fdf4">
+              <div class="mockup-card-name" style="color:#166534">Papas fritas</div>
+              <div class="mockup-card-price">$1.800</div>
+            </div>
+            <div class="mockup-card">
+              <div class="mockup-card-name">Bebida 500ml</div>
+              <div class="mockup-card-price">$900</div>
+            </div>
+            <div class="mockup-card">
+              <div class="mockup-card-name">Combo familiar</div>
+              <div class="mockup-card-price">$8.200</div>
+            </div>
+            <div class="mockup-card">
+              <div class="mockup-card-name">Milanesa napol.</div>
+              <div class="mockup-card-price">$4.100</div>
+            </div>
+            <div class="mockup-card" style="display:flex;align-items:center;justify-content:center;background:var(--gray-50)">
+              <span style="font-size:11px;color:#9ca3af">Ver más...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="section-tag">Funciones</div>
+  <h2 class="section-title">Todo lo que necesita tu negocio</h2>
+  <p class="section-sub">Diseñado para ser simple de usar desde el primer día, sin capacitación ni configuración compleja.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🛒</div>
+      <div class="feature-title">Ventas rápidas</div>
+      <p class="feature-desc">Seleccioná productos con un click, ajustá cantidades y confirmá la venta en segundos. Buscador integrado para encontrar cualquier producto al instante.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📦</div>
+      <div class="feature-title">Gestión de productos</div>
+      <p class="feature-desc">Agregá, editá y eliminá productos fácilmente. Soporte de precios en formato argentino (ej: 22.000 o 22,50) sin errores de redondeo.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📌</div>
+      <div class="feature-title">Tablero de pedidos</div>
+      <p class="feature-desc">Cada venta genera un papelito en el tablero. Marcalos como hechos cuando estén listos. Ideal para cocinas, bares y locales con pedidos simultáneos.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📋</div>
+      <div class="feature-title">Historial de ventas</div>
+      <p class="feature-desc">Revisá todas las ventas del día con su detalle completo. Eliminá registros erróneos con confirmación para evitar borrados accidentales.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💾</div>
+      <div class="feature-title">Sin internet</div>
+      <p class="feature-desc">Toda la información se guarda localmente en tu computadora. Funciona aunque no tengas conexión a internet. Tus datos son tuyos.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-title">Súper liviano</div>
+      <p class="feature-desc">Instalación de menos de 100MB. Arranca en segundos. Compatible con Windows 10 y Windows 11 sin requisitos especiales de hardware.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="section-tag">Cómo funciona</div>
+  <h2 class="section-title">Del pedido al cobro en 4 pasos</h2>
+  <p class="section-sub" style="margin-bottom:52px">Así de simple es trabajar con Your Business todos los días.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-title">Cargá tus productos</div>
+      <p class="step-desc">La primera vez, ingresá todos los productos de tu negocio con nombre y precio.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-title">Armá la orden</div>
+      <p class="step-desc">Elegí los productos del catálogo o buscalos por nombre. Se van sumando al carrito automáticamente.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-title">Confirmá la venta</div>
+      <p class="step-desc">Presioná "Confirmar venta" y listo. Se registra en el historial y aparece un papelito en el tablero.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-title">Gestioná los pedidos</div>
+      <p class="step-desc">En el Tablero podés ver qué pedidos están pendientes y marcarlos como hechos cuando los terminás.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section class="download" id="download">
+  <img src="logo-icon.png" alt="Your Business" class="download-logo" />
+  <h2>Descargá Your Business gratis</h2>
+  <p>Sin costo, sin registro, sin suscripción. Instalás y empezás a usarlo en minutos.</p>
+
+  <a href="YourBusiness-Setup.exe" class="btn btn-primary" style="font-size:16px;padding:16px 36px">
+    ⬇ Descargar para Windows
+  </a>
+
+  <div class="sys-reqs">
+    <div class="req"><div class="req-dot"></div> Windows 10 / 11</div>
+    <div class="req"><div class="req-dot"></div> 64-bit</div>
+    <div class="req"><div class="req-dot"></div> ~80 MB de espacio</div>
+    <div class="req"><div class="req-dot"></div> Sin internet requerido</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p><strong>Your Business</strong> · Sistema POS de Registro de Compras</p>
+  <p style="margin-top:6px">Hecho con ♥ para negocios argentinos</p>
+</footer>
+
+</body>
+</html>

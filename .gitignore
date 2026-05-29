@@ -1,0 +1,6 @@
+node_modules/
+dist/
+out/
+landing/YourBusiness-Setup.exe
+*.log
+.env
