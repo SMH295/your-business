@@ -1,3 +1,4 @@
 [build]
-  publish = "landing"
+  base = "landing"
+  publish = "."
   command = ""
