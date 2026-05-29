@@ -1,4 +1,3 @@
 [build]
   publish = "landing"
   command = ""
-  ignore = "exit 0"
