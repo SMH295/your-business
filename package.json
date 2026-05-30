@@ -1,6 +1,6 @@
 {
   "name": "your-business",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Sistema POS para pequeños negocios",
   "main": "out/main/index.js",
   "scripts": {
