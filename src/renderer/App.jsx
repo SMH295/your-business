@@ -9,13 +9,15 @@ import Products from './components/Products'
 import History from './components/History'
 import Board from './components/Board'
 import Settings from './components/Settings'
+import AIAnalysis from './components/AIAnalysis'
 
 const NAV = [
-  { id: 'sales',    label: 'Ventas',         icon: '🛒' },
-  { id: 'products', label: 'Productos',       icon: '📦' },
-  { id: 'history',  label: 'Historial',       icon: '📋' },
-  { id: 'board',    label: 'Tablero',         icon: '📌' },
-  { id: 'settings', label: 'Configuración',   icon: '⚙️' },
+  { id: 'sales',      label: 'Ventas',         icon: '🛒' },
+  { id: 'products',   label: 'Productos',       icon: '📦' },
+  { id: 'history',    label: 'Historial',       icon: '📋' },
+  { id: 'board',      label: 'Tablero',         icon: '📌' },
+  { id: 'ai',         label: 'Análisis IA',     icon: '✨' },
+  { id: 'settings',   label: 'Configuración',   icon: '⚙️' },
 ]
 
 export default function App() {
@@ -127,6 +129,7 @@ export default function App() {
         {activeTab === 'products' && <Products />}
         {activeTab === 'history'  && <History />}
         {activeTab === 'board'    && <Board />}
+        {activeTab === 'ai'       && <AIAnalysis negocio={negocio} />}
         {activeTab === 'settings' && (
           <Settings
             negocio={negocio}

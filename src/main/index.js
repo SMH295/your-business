@@ -157,6 +157,119 @@ function registerHandlers() {
     try { db.prepare('DELETE FROM pedidos WHERE id = ?').run(id); return { ok: true } }
     catch (err) { console.error('pedidos:delete', err); throw err }
   })
+
+  // Config (API keys, preferences)
+  const getConfigPath = () => path.join(app.getPath('userData'), 'config.json')
+  const readConfig = () => { try { return JSON.parse(fs.readFileSync(getConfigPath(), 'utf8')) } catch { return {} } }
+  ipcMain.handle('config:get', (_e, key) => readConfig()[key] ?? null)
+  ipcMain.handle('config:set', (_e, key, value) => {
+    const cfg = readConfig()
+    cfg[key] = value
+    fs.writeFileSync(getConfigPath(), JSON.stringify(cfg))
+    return true
+  })
+
+  // Analytics
+  ipcMain.handle('analytics:getStats', () => {
+    try {
+      const ventasHoy = db.prepare(`
+        SELECT COUNT(*) as count, COALESCE(SUM(total),0) as total
+        FROM ventas WHERE DATE(fecha_hora,'localtime') = DATE('now','localtime')
+      `).get()
+
+      const ventasPorHora = db.prepare(`
+        SELECT strftime('%H',fecha_hora,'localtime') as hora,
+               COUNT(*) as count, COALESCE(SUM(total),0) as total
+        FROM ventas WHERE DATE(fecha_hora,'localtime') = DATE('now','localtime')
+        GROUP BY hora ORDER BY hora
+      `).all()
+
+      const ventasPorDia = db.prepare(`
+        SELECT DATE(fecha_hora,'localtime') as dia,
+               COUNT(*) as count, COALESCE(SUM(total),0) as total
+        FROM ventas
+        WHERE fecha_hora >= datetime('now','localtime','-6 days')
+        GROUP BY dia ORDER BY dia
+      `).all()
+
+      const todasVentas = db.prepare('SELECT detalle FROM ventas').all()
+      const pm = {}
+      todasVentas.forEach(v => {
+        try {
+          JSON.parse(v.detalle).forEach(item => {
+            if (!pm[item.nombre]) pm[item.nombre] = { nombre: item.nombre, cantidad: 0, ingresos: 0 }
+            pm[item.nombre].cantidad += Number(item.cantidad)
+            pm[item.nombre].ingresos += Number(item.subtotal)
+          })
+        } catch {}
+      })
+      const topProductos = Object.values(pm).sort((a, b) => b.cantidad - a.cantidad).slice(0, 5)
+
+      return { ventasHoy, ventasPorHora, ventasPorDia, topProductos }
+    } catch (err) { console.error('analytics:getStats', err); throw err }
+  })
+
+  // List available Gemini models for a key
+  ipcMain.handle('ai:listModels', async (_e, apiKey) => {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`)
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error?.message || 'Error listando modelos')
+    return data.models
+      .filter(m => m.supportedGenerationMethods?.includes('generateContent'))
+      .map(m => m.name.replace('models/', ''))
+  })
+
+  // AI Chat via Google Gemini API (free tier) — auto-detects available model
+  ipcMain.handle('ai:chat', async (_e, { messages, apiKey, businessContext }) => {
+    const BASE = 'https://generativelanguage.googleapis.com/v1beta/models'
+    const CANDIDATES = [
+      'gemini-2.0-flash-lite',
+      'gemini-2.0-flash',
+      'gemini-1.5-flash',
+      'gemini-1.5-flash-latest',
+      'gemini-1.5-flash-8b',
+      'gemini-1.0-pro',
+    ]
+
+    const body = JSON.stringify({
+      systemInstruction: { parts: [{ text: businessContext }] },
+      contents: messages.map(m => ({
+        role: m.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: m.content }]
+      }))
+    })
+
+    // Discover available models for this key dynamically
+    const listRes = await fetch(`${BASE}?key=${apiKey}`)
+    if (listRes.ok) {
+      const listData = await listRes.json()
+      const available = (listData.models || [])
+        .filter(m => m.supportedGenerationMethods?.includes('generateContent'))
+        .map(m => m.name.replace('models/', ''))
+      CANDIDATES.unshift(...available)
+    }
+
+    let lastErr = ''
+    const tried = new Set()
+    for (const model of CANDIDATES) {
+      if (tried.has(model)) continue
+      tried.add(model)
+      const res = await fetch(`${BASE}/${model}:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body
+      })
+      if (res.ok) {
+        const data = await res.json()
+        return data.candidates[0].content.parts[0].text
+      }
+      const err = await res.json().catch(() => ({}))
+      lastErr = err.error?.message || `Error ${res.status}`
+      if (lastErr.includes('not found') || lastErr.includes('not supported') || lastErr.includes('quota')) continue
+      break
+    }
+    throw new Error(lastErr)
+  })
 }
 
 // --- Window ---

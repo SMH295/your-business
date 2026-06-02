@@ -45,6 +45,37 @@ function InputRow({ label, type = 'text', value, onChange, placeholder }) {
   )
 }
 
+function ApiKeyField({ showToast }) {
+  const [key, setKey] = useState('')
+  const [saved, setSaved] = useState(false)
+  useEffect(() => {
+    window.api.config.get('geminiKey').then(k => { if (k) setSaved(true) })
+  }, [])
+  async function save() {
+    if (!key.trim()) return
+    await window.api.config.set('geminiKey', key.trim())
+    setSaved(true); setKey(''); showToast('API Key guardada')
+  }
+  async function remove() {
+    await window.api.config.set('geminiKey', '')
+    setSaved(false); showToast('API Key eliminada')
+  }
+  if (saved) return (
+    <div className="flex items-center gap-3">
+      <span className="text-sm text-green-600 font-semibold">✓ Configurada</span>
+      <button onClick={remove} className="text-xs text-red-400 hover:text-red-600 transition-colors">Eliminar</button>
+    </div>
+  )
+  return (
+    <div className="flex gap-2 w-72">
+      <input type="password" value={key} onChange={e => setKey(e.target.value)} onKeyDown={e => e.key === 'Enter' && save()}
+        placeholder="AIza..."
+        className="flex-1 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+      <button onClick={save} disabled={!key.trim()} className="px-3 py-1.5 bg-primary text-white text-sm font-semibold rounded-md disabled:opacity-50">Guardar</button>
+    </div>
+  )
+}
+
 export default function Settings({ negocio, onNegocioUpdate, darkMode, onToggleDark }) {
   const [toast, setToast] = useState(null)
 
@@ -212,6 +243,16 @@ export default function Settings({ negocio, onNegocioUpdate, darkMode, onToggleD
               {savingEmail ? 'Guardando...' : 'Cambiar correo'}
             </button>
           </div>
+        </Section>
+
+        {/* API Key IA */}
+        <Section title="Análisis IA — API Key">
+          <Field label="Claude API Key">
+            <ApiKeyField showToast={showToast} />
+          </Field>
+          <p className="text-xs text-gray-400 mt-2">
+            Gratis en <strong>aistudio.google.com</strong> → Get API key → Create API key → elegí <strong>"Default Gemini Project"</strong> (no uses otro proyecto)
+          </p>
         </Section>
 
         {/* Exportar */}

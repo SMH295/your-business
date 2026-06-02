@@ -26,5 +26,16 @@ contextBridge.exposeInMainWorld('api', {
     create: (data) => ipcRenderer.invoke('pedidos:create', data),
     update: (data) => ipcRenderer.invoke('pedidos:update', data),
     delete: (data) => ipcRenderer.invoke('pedidos:delete', data)
+  },
+  analytics: {
+    getStats: () => ipcRenderer.invoke('analytics:getStats')
+  },
+  ai: {
+    chat: (data) => ipcRenderer.invoke('ai:chat', data),
+    listModels: (key) => ipcRenderer.invoke('ai:listModels', key)
+  },
+  config: {
+    get: (key) => ipcRenderer.invoke('config:get', key),
+    set: (key, value) => ipcRenderer.invoke('config:set', key, value)
   }
 })
