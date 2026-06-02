@@ -90,7 +90,7 @@ function StatCard({ icon, label, value, sub, premium }) {
       boxShadow: premium ? '0 8px 24px rgba(21,128,61,0.3)' : '0 2px 12px rgba(0,0,0,0.06)',
       border: premium ? 'none' : '1px solid #e5e7eb',
       position: 'relative', overflow: 'hidden',
-    }} className={premium ? '' : 'bg-white dark:bg-gray-800 dark:border-gray-700'}>
+    }} className={premium ? '' : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'}>
       {premium && <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%', background: 'rgba(255,255,255,0.07)' }} />}
       <div style={{ fontSize: '26px', marginBottom: '8px' }}>{icon}</div>
       <div style={{ fontSize: '20px', fontWeight: 800, lineHeight: 1.2, color: premium ? '#fff' : undefined }}
@@ -414,14 +414,14 @@ export default function AIAnalysis({ negocio }) {
 
             {/* Charts */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-              <div style={{ background:'white', borderRadius:'16px', padding:'20px', border:'1px solid #e5e7eb', boxShadow:'0 2px 12px rgba(0,0,0,0.05)' }}
-                className="dark:bg-gray-800 dark:border-gray-700">
+              <div style={{ borderRadius:'16px', padding:'20px', boxShadow:'0 2px 12px rgba(0,0,0,0.05)' }}
+                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                 <h3 style={{ fontSize:'14px', fontWeight:700, marginBottom:2 }} className="text-gray-900 dark:text-white">Ventas por hora — hoy</h3>
                 <p style={{ fontSize:'11px', marginBottom:14 }} className="text-gray-400">Órdenes por franja horaria (6am–11pm)</p>
                 <BarChart data={horasData} labelKey="hora" valueKey="count" height={120} />
               </div>
-              <div style={{ background:'white', borderRadius:'16px', padding:'20px', border:'1px solid #e5e7eb', boxShadow:'0 2px 12px rgba(0,0,0,0.05)' }}
-                className="dark:bg-gray-800 dark:border-gray-700">
+              <div style={{ borderRadius:'16px', padding:'20px', boxShadow:'0 2px 12px rgba(0,0,0,0.05)' }}
+                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                 <h3 style={{ fontSize:'14px', fontWeight:700, marginBottom:2 }} className="text-gray-900 dark:text-white">Ingresos últimos 7 días</h3>
                 <p style={{ fontSize:'11px', marginBottom:14 }} className="text-gray-400">Total diario en COP</p>
                 <BarChart data={diasData} labelKey="dia" valueKey="total"
@@ -430,8 +430,8 @@ export default function AIAnalysis({ negocio }) {
             </div>
 
             {/* Top productos */}
-            <div style={{ background:'white', borderRadius:'16px', padding:'24px', border:'1px solid #e5e7eb', boxShadow:'0 2px 12px rgba(0,0,0,0.05)' }}
-              className="dark:bg-gray-800 dark:border-gray-700">
+            <div style={{ borderRadius:'16px', padding:'24px', boxShadow:'0 2px 12px rgba(0,0,0,0.05)' }}
+              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:18 }}>
                 <div>
                   <h3 style={{ fontSize:'14px', fontWeight:700 }} className="text-gray-900 dark:text-white">Top productos más vendidos</h3>
