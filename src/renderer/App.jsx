@@ -119,7 +119,7 @@ export default function App() {
           >
             Cerrar sesión
           </button>
-          <p className="text-xs text-gray-400 text-center">Your Business v1.0.9</p>
+          <p className="text-xs text-gray-400 text-center">Your Business v1.1.0</p>
         </div>
       </aside>
 
