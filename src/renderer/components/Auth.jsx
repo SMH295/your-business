@@ -96,7 +96,7 @@ export default function Auth({ onAuth, deviceError }) {
   }
 
   return (
-    <div className="flex items-center justify-center h-full bg-gray-50">
+    <div className="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-900">
       <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 w-full max-w-sm">
 
         {/* Logo */}

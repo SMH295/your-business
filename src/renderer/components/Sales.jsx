@@ -10,7 +10,8 @@ function fmt(n) {
 export default function Sales() {
   const [productos, setProductos] = useState([])
   const [carrito, setCarrito] = useState([])
-  const [toast, setToast] = useState(null)
+  const [toast, setToast] = useState(null) // { msg, type }
+
   const [loading, setLoading] = useState(false)
   const [busqueda, setBusqueda] = useState('')
 
@@ -59,9 +60,10 @@ export default function Sales() {
       await window.api.ventas.create({ numero_orden, total, detalle: detalleStr })
       await window.api.pedidos.create({ numero_orden, total, detalle: detalleStr, nota: '', hecho: 0 })
       setCarrito([])
-      setToast(`Venta #${numero_orden} registrada`)
+      setToast({ msg: `Venta #${numero_orden} registrada`, type: 'success' })
     } catch (err) {
       console.error(err)
+      setToast({ msg: 'Error al guardar la venta. Intentá de nuevo.', type: 'error' })
     } finally {
       setLoading(false)
     }
@@ -158,7 +160,7 @@ export default function Sales() {
         </div>
       </div>
 
-      {toast && <Toast message={`✓ ${toast}`} type="success" onClose={() => setToast(null)} />}
+      {toast && <Toast message={toast.type === 'error' ? `✕ ${toast.msg}` : `✓ ${toast.msg}`} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   )
 }

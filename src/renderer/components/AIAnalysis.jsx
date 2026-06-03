@@ -68,7 +68,7 @@ function HorizBars({ data }) {
               {d.cantidad} uds · ${fmt(d.ingresos)}
             </span>
           </div>
-          <div style={{ height: '8px', borderRadius: '4px', overflow: 'hidden' }} className="bg-gray-100 dark:bg-gray-700">
+          <div style={{ height: '8px', borderRadius: '4px', overflow: 'hidden' }} className="bg-gray-200 dark:bg-gray-600">
             <div style={{
               width: `${(d.cantidad / max) * 100}%`, height: '100%',
               background: i === 0 ? 'linear-gradient(to right,#15803d,#22c55e)' : '#86efac',

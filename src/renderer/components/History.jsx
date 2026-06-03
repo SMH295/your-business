@@ -118,7 +118,7 @@ export default function History() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-              {JSON.parse(selected.detalle).map((item, i) => (
+              {((() => { try { return JSON.parse(selected.detalle) } catch { return [] } })()).map((item, i) => (
                 <tr key={i}>
                   <td className="py-2 text-gray-900 dark:text-white">{item.nombre}</td>
                   <td className="py-2 text-center text-gray-600 dark:text-gray-300">{item.cantidad}</td>

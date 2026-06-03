@@ -35,7 +35,7 @@ function StickyNote({ note, onUpdate, onDelete }) {
   const [nota, setNota] = useState(note.nota || '')
   const isDone = note.hecho === 1
   const rotation = ROTATIONS[note.id % ROTATIONS.length]
-  const items = note.detalle ? JSON.parse(note.detalle) : []
+  const items = (() => { try { return note.detalle ? JSON.parse(note.detalle) : [] } catch { return [] } })()
 
   const bg = isDone ? '#dcfce7' : '#fef9c3'
   const borderColor = isDone ? '#86efac' : '#fde047'
