@@ -25,7 +25,10 @@ export default function History() {
     window.api.ventas.getToday().then((v) => { setVentas(v); setLoading(false) })
   }
 
-  useEffect(() => { loadVentas() }, [])
+  useEffect(() => {
+    loadVentas()
+    window.api.telemetry.track('history_viewed', {})
+  }, [])
 
   async function handleDelete() {
     await window.api.ventas.delete({ id: toDelete.id })

@@ -45,6 +45,37 @@ function InputRow({ label, type = 'text', value, onChange, placeholder }) {
   )
 }
 
+function TelemetryToggle({ showToast }) {
+  const [consent, setConsent] = useState(undefined)
+
+  useEffect(() => {
+    window.api.telemetry.getConsent().then(c => setConsent(c !== null ? c : false))
+  }, [])
+
+  async function toggle() {
+    const newVal = !consent
+    await window.api.telemetry.setConsent(newVal)
+    setConsent(newVal)
+    showToast(newVal ? 'Telemetría activada' : 'Telemetría desactivada')
+  }
+
+  if (consent === undefined) return null
+
+  return (
+    <div className="flex items-center gap-3">
+      <span className="text-sm text-gray-500 dark:text-gray-400">
+        {consent ? 'Activada' : 'Desactivada'}
+      </span>
+      <button
+        onClick={toggle}
+        className={`relative w-12 h-6 rounded-full transition-colors ${consent ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'}`}
+      >
+        <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${consent ? 'translate-x-6' : 'translate-x-0'}`} />
+      </button>
+    </div>
+  )
+}
+
 function ApiKeyField({ showToast }) {
   const [key, setKey] = useState('')
   const [saved, setSaved] = useState(false)
@@ -252,6 +283,17 @@ export default function Settings({ negocio, onNegocioUpdate, darkMode, onToggleD
           </Field>
           <p className="text-xs text-gray-400 mt-2">
             Gratis en <strong>aistudio.google.com</strong> → Get API key → Create API key → elegí <strong>"Default Gemini Project"</strong> (no uses otro proyecto)
+          </p>
+        </Section>
+
+        {/* Privacidad */}
+        <Section title="Privacidad">
+          <Field label="Datos de uso anónimos">
+            <TelemetryToggle showToast={showToast} />
+          </Field>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+            Enviamos datos anónimos (funciones usadas, frecuencia de uso) para mejorar la app.
+            Nunca se envían nombres, productos ni montos.
           </p>
         </Section>
 

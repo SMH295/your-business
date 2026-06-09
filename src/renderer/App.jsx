@@ -11,6 +11,38 @@ import Board from './components/Board'
 import Settings from './components/Settings'
 import AIAnalysis from './components/AIAnalysis'
 
+function ConsentBanner({ onAccept, onReject }) {
+  return (
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t-2 border-gray-200 dark:border-gray-600 shadow-xl">
+      <div className="px-6 py-4 flex items-start gap-4">
+        <div className="flex-1">
+          <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+            Ayudanos a mejorar Your Business
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+            Recopilamos datos anónimos de uso (qué funciones se usan y con qué frecuencia) para mejorar la app.
+            Nunca enviamos tu nombre, productos ni montos. Podés desactivarlo en Configuración en cualquier momento.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0 mt-0.5">
+          <button
+            onClick={onReject}
+            className="px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+          >
+            No, gracias
+          </button>
+          <button
+            onClick={onAccept}
+            className="px-4 py-1.5 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-md transition-colors"
+          >
+            Aceptar
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const NAV = [
   { id: 'sales',      label: 'Ventas',         icon: '🛒' },
   { id: 'products',   label: 'Productos',       icon: '📦' },
@@ -28,6 +60,7 @@ export default function App() {
   const [negocio,     setNegocio]     = useState(null)
   const [activeTab,   setActiveTab]   = useState('sales')
   const [darkMode,    setDarkMode]    = useState(() => localStorage.getItem('theme') === 'dark')
+  const [consent,     setConsent]     = useState(undefined) // undefined=cargando, null=sin respuesta, true/false
 
   // Apply dark class to <html> whenever darkMode changes
   useEffect(() => {
@@ -57,6 +90,20 @@ export default function App() {
       setAuthLoading(false)
     })
   }, [])
+
+  // Load consent once app is fully ready
+  useEffect(() => {
+    if (status !== 'ready') return
+    if (!window.api?.telemetry) { setConsent(null); return }
+    window.api.telemetry.getConsent()
+      .then(c => setConsent(c))
+      .catch(() => setConsent(null))
+  }, [status])
+
+  async function handleConsent(accepted) {
+    await window.api.telemetry.setConsent(accepted)
+    setConsent(accepted)
+  }
 
   // Load negocio once authenticated
   useEffect(() => {
@@ -119,7 +166,7 @@ export default function App() {
           >
             Cerrar sesión
           </button>
-          <p className="text-xs text-gray-400 text-center">Your Business v1.1.0</p>
+          <p className="text-xs text-gray-400 text-center">Your Business v1.1.1</p>
         </div>
       </aside>
 
@@ -139,6 +186,13 @@ export default function App() {
           />
         )}
       </main>
+
+      {consent === null && (
+        <ConsentBanner
+          onAccept={() => handleConsent(true)}
+          onReject={() => handleConsent(false)}
+        />
+      )}
     </div>
   )
 }

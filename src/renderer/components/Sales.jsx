@@ -59,6 +59,7 @@ export default function Sales() {
       const detalleStr = JSON.stringify(carrito)
       await window.api.ventas.create({ numero_orden, total, detalle: detalleStr })
       await window.api.pedidos.create({ numero_orden, total, detalle: detalleStr, nota: '', hecho: 0 })
+      window.api.telemetry.track('sale_registered', { item_count: carrito.length })
       setCarrito([])
       setToast({ msg: `Venta #${numero_orden} registrada`, type: 'success' })
     } catch (err) {

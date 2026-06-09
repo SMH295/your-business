@@ -4,7 +4,11 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin()]
+    plugins: [externalizeDepsPlugin()],
+    define: {
+      'process.env.GA_MEASUREMENT_ID': JSON.stringify('G-L32W9KW4FJ'),
+      'process.env.GA_API_SECRET':     JSON.stringify('J9f5xbOcQ4eNCnyGPvvNT')
+    }
   },
   preload: {
     plugins: [externalizeDepsPlugin()]

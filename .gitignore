@@ -4,3 +4,4 @@ out/
 landing/YourBusiness-Setup.exe
 *.log
 .env
+.gstack/

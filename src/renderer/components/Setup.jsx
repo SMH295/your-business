@@ -15,6 +15,7 @@ export default function Setup({ onComplete }) {
     setError('')
     try {
       const negocio = await window.api.negocio.create({ nombre: nombre.trim() })
+      window.api.telemetry.track('business_configured', {})
       onComplete(negocio)
     } catch (err) {
       setError('Ocurrió un error. Intentá de nuevo.')

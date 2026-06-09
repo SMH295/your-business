@@ -104,8 +104,10 @@ export default function Products() {
   async function handleSave(data) {
     if (modal === 'add') {
       await window.api.productos.create(data)
+      window.api.telemetry.track('product_created', {})
     } else {
       await window.api.productos.update({ id: modal.id, ...data })
+      window.api.telemetry.track('product_edited', {})
     }
     setModal(null)
     loadProductos()
@@ -113,6 +115,7 @@ export default function Products() {
 
   async function handleDelete() {
     await window.api.productos.delete({ id: confirm.id })
+    window.api.telemetry.track('product_deleted', {})
     setConfirm(null)
     loadProductos()
   }

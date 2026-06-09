@@ -2,8 +2,111 @@ const { app, BrowserWindow, shell, ipcMain, dialog } = require('electron')
 const { autoUpdater } = require('electron-updater')
 const path = require('path')
 const fs = require('fs')
+const os = require('os')
 const { randomUUID } = require('crypto')
 const Database = require('better-sqlite3')
+
+// ─── Telemetry ────────────────────────────────────────────────────────────────
+// Replaced at build time by electron-vite define; fallback for dev mode
+const _GA_MEASUREMENT_ID = process.env.GA_MEASUREMENT_ID || 'G-L32W9KW4FJ'
+const _GA_API_SECRET      = process.env.GA_API_SECRET     || 'J9f5xbOcQ4eNCnyGPvvNT'
+const _GA_ENDPOINT        = 'https://www.google-analytics.com/mp/collect'
+const _sessionId          = Date.now().toString()
+let   _telDb              = null
+let   _appVersion         = ''
+
+function _initTelemetry(database, appVersion) {
+  _telDb      = database
+  _appVersion = appVersion || ''
+  _telDb.exec(`
+    CREATE TABLE IF NOT EXISTS telemetry_queue (
+      id         INTEGER PRIMARY KEY AUTOINCREMENT,
+      event_name TEXT NOT NULL,
+      params     TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      sent       INTEGER NOT NULL DEFAULT 0
+    );
+    CREATE TABLE IF NOT EXISTS telemetry_meta (
+      key   TEXT PRIMARY KEY,
+      value TEXT
+    );
+  `)
+}
+
+function _getMeta(key) {
+  if (!_telDb) return null
+  const row = _telDb.prepare('SELECT value FROM telemetry_meta WHERE key = ?').get(key)
+  return row ? row.value : null
+}
+function _setMeta(key, value) {
+  if (!_telDb) return
+  _telDb.prepare('INSERT OR REPLACE INTO telemetry_meta (key, value) VALUES (?, ?)').run(key, value)
+}
+
+function _getInstallId() {
+  let id = _getMeta('install_id')
+  if (!id) { id = randomUUID(); _setMeta('install_id', id) }
+  return id
+}
+
+function telGetConsent() {
+  const c = _getMeta('consent')
+  if (c === null) return null
+  return c === '1'
+}
+function telSetConsent(bool) { _setMeta('consent', bool ? '1' : '0') }
+
+function _baseParams() {
+  return {
+    app_version:          _appVersion,
+    os:                   process.platform,
+    os_version:           os.release(),
+    locale:               Intl.DateTimeFormat().resolvedOptions().locale,
+    session_id:           _sessionId,
+    engagement_time_msec: '1'
+  }
+}
+
+function telTrackEvent(name, params = {}) {
+  if (!_telDb || telGetConsent() !== true) return
+  try {
+    _telDb.prepare(
+      'INSERT INTO telemetry_queue (event_name, params, created_at) VALUES (?, ?, ?)'
+    ).run(name, JSON.stringify({ ..._baseParams(), ...params }), new Date().toISOString())
+  } catch (err) { console.error('[telemetry] trackEvent error:', err) }
+}
+
+function telTrackInstallIfNeeded() {
+  if (_getMeta('install_event_sent') === '1') return
+  if (telGetConsent() !== true) return
+  telTrackEvent('app_installed', {})
+  _setMeta('install_event_sent', '1')
+}
+
+async function telFlush() {
+  if (!_telDb || !_GA_MEASUREMENT_ID || !_GA_API_SECRET) return
+  if (telGetConsent() !== true) return
+  try {
+    const rows = _telDb.prepare(
+      'SELECT * FROM telemetry_queue WHERE sent = 0 ORDER BY id ASC LIMIT 20'
+    ).all()
+    if (rows.length === 0) return
+    const installId = _getInstallId()
+    const events = rows.map(r => ({
+      name:   r.event_name,
+      params: (() => { try { return JSON.parse(r.params) } catch { return {} } })()
+    }))
+    const res = await fetch(
+      `${_GA_ENDPOINT}?measurement_id=${_GA_MEASUREMENT_ID}&api_secret=${_GA_API_SECRET}`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ client_id: installId, events }) }
+    )
+    if (res.ok || res.status === 204) {
+      const ids = rows.map(r => r.id)
+      _telDb.prepare(`UPDATE telemetry_queue SET sent = 1 WHERE id IN (${ids.map(() => '?').join(',')})`).run(...ids)
+    }
+  } catch (err) { console.error('[telemetry] flush error:', err) }
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 function getOrCreateDeviceId() {
   const deviceIdPath = path.join(app.getPath('userData'), 'device-id.txt')
@@ -156,6 +259,22 @@ function registerHandlers() {
   ipcMain.handle('pedidos:delete', (_e, { id }) => {
     try { db.prepare('DELETE FROM pedidos WHERE id = ?').run(id); return { ok: true } }
     catch (err) { console.error('pedidos:delete', err); throw err }
+  })
+
+  // Telemetry
+  ipcMain.handle('telemetry:track', (_e, name, params) => {
+    telTrackEvent(name, params || {})
+    return true
+  })
+  ipcMain.handle('telemetry:getConsent', () => telGetConsent())
+  ipcMain.handle('telemetry:setConsent', (_e, val) => {
+    telSetConsent(val)
+    if (val) {
+      telTrackEvent('app_opened', {})
+      telTrackInstallIfNeeded()
+      telFlush().catch(() => {})
+    }
+    return true
   })
 
   // Config (API keys, preferences)
@@ -321,9 +440,16 @@ function setupUpdater() {
 
 app.whenReady().then(() => {
   initDb()
+  _initTelemetry(db, app.getVersion())
   registerHandlers()
   createWindow()
   if (app.isPackaged) setupUpdater()
+
+  // Track startup; no-ops if consent hasn't been given yet
+  telTrackEvent('app_opened', {})
+  telTrackInstallIfNeeded()
+  telFlush().catch(() => {})
+  setInterval(() => telFlush().catch(() => {}), 5 * 60 * 1000)
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

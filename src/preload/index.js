@@ -37,5 +37,10 @@ contextBridge.exposeInMainWorld('api', {
   config: {
     get: (key) => ipcRenderer.invoke('config:get', key),
     set: (key, value) => ipcRenderer.invoke('config:set', key, value)
+  },
+  telemetry: {
+    track:      (name, params) => ipcRenderer.invoke('telemetry:track', name, params),
+    getConsent: ()             => ipcRenderer.invoke('telemetry:getConsent'),
+    setConsent: (val)          => ipcRenderer.invoke('telemetry:setConsent', val)
   }
 })
