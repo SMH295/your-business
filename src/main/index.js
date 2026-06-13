@@ -148,6 +148,10 @@ function initDb() {
       hecho        INTEGER NOT NULL DEFAULT 0,
       creado_en    DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+    CREATE TABLE IF NOT EXISTS calendar_notes (
+      date TEXT PRIMARY KEY,
+      note TEXT NOT NULL DEFAULT ''
+    );
   `)
 
   // Migration: add new columns if they don't exist (for existing installs)
@@ -275,6 +279,45 @@ function registerHandlers() {
       telFlush().catch(() => {})
     }
     return true
+  })
+
+  // Calendar
+  ipcMain.handle('calendar:getMonthSummary', (_e, year, month) => {
+    try {
+      return db.prepare(`
+        SELECT DATE(fecha_hora, 'localtime') as date,
+               COUNT(*) as count,
+               SUM(total) as total
+        FROM ventas
+        WHERE strftime('%Y', fecha_hora, 'localtime') = ?
+          AND strftime('%m', fecha_hora, 'localtime') = ?
+        GROUP BY DATE(fecha_hora, 'localtime')
+      `).all(String(year), String(month).padStart(2, '0'))
+    } catch (err) { console.error('calendar:getMonthSummary', err); throw err }
+  })
+
+  ipcMain.handle('calendar:getDaySales', (_e, date) => {
+    try {
+      return db.prepare(`
+        SELECT * FROM ventas
+        WHERE DATE(fecha_hora, 'localtime') = ?
+        ORDER BY numero_orden ASC
+      `).all(date)
+    } catch (err) { console.error('calendar:getDaySales', err); throw err }
+  })
+
+  ipcMain.handle('calendar:getNote', (_e, date) => {
+    try {
+      const row = db.prepare('SELECT note FROM calendar_notes WHERE date = ?').get(date)
+      return row ? row.note : ''
+    } catch (err) { console.error('calendar:getNote', err); throw err }
+  })
+
+  ipcMain.handle('calendar:setNote', (_e, date, note) => {
+    try {
+      db.prepare('INSERT OR REPLACE INTO calendar_notes (date, note) VALUES (?, ?)').run(date, note)
+      return true
+    } catch (err) { console.error('calendar:setNote', err); throw err }
   })
 
   // Config (API keys, preferences)

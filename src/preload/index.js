@@ -38,6 +38,12 @@ contextBridge.exposeInMainWorld('api', {
     get: (key) => ipcRenderer.invoke('config:get', key),
     set: (key, value) => ipcRenderer.invoke('config:set', key, value)
   },
+  calendar: {
+    getMonthSummary: (year, month) => ipcRenderer.invoke('calendar:getMonthSummary', year, month),
+    getDaySales:     (date)        => ipcRenderer.invoke('calendar:getDaySales', date),
+    getNote:         (date)        => ipcRenderer.invoke('calendar:getNote', date),
+    setNote:         (date, note)  => ipcRenderer.invoke('calendar:setNote', date, note)
+  },
   telemetry: {
     track:      (name, params) => ipcRenderer.invoke('telemetry:track', name, params),
     getConsent: ()             => ipcRenderer.invoke('telemetry:getConsent'),

@@ -10,6 +10,7 @@ import History from './components/History'
 import Board from './components/Board'
 import Settings from './components/Settings'
 import AIAnalysis from './components/AIAnalysis'
+import Calendar from './components/Calendar'
 
 function ConsentBanner({ onAccept, onReject }) {
   return (
@@ -49,6 +50,7 @@ const NAV = [
   { id: 'history',    label: 'Historial',       icon: '📋' },
   { id: 'board',      label: 'Tablero',         icon: '📌' },
   { id: 'ai',         label: 'Análisis IA',     icon: '✨' },
+  { id: 'calendar',   label: 'Calendario',      icon: '📅' },
   { id: 'settings',   label: 'Configuración',   icon: '⚙️' },
 ]
 
@@ -166,7 +168,7 @@ export default function App() {
           >
             Cerrar sesión
           </button>
-          <p className="text-xs text-gray-400 text-center">Your Business v1.1.1</p>
+          <p className="text-xs text-gray-400 text-center">Your Business v1.2.0</p>
         </div>
       </aside>
 
@@ -177,6 +179,7 @@ export default function App() {
         {activeTab === 'history'  && <History />}
         {activeTab === 'board'    && <Board />}
         {activeTab === 'ai'       && <AIAnalysis negocio={negocio} />}
+        {activeTab === 'calendar' && <Calendar negocio={negocio} />}
         {activeTab === 'settings' && (
           <Settings
             negocio={negocio}
