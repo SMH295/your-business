@@ -1,481 +1,318 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Business — Sistema POS para tu negocio</title>
-  <link rel="icon" type="image/png" href="logo-icon.png" />
+  <link rel="icon" type="image/png" href="logo-icon.png">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --green-50:  #f0fdf4;
-      --green-100: #dcfce7;
-      --green-400: #4ade80;
-      --green-500: #22c55e;
-      --green-600: #16a34a;
-      --green-700: #15803d;
-      --green-800: #166534;
-      --green-900: #14532d;
-      --gray-50:   #f9fafb;
-      --gray-100:  #f3f4f6;
-      --gray-200:  #e5e7eb;
-      --gray-400:  #9ca3af;
-      --gray-600:  #4b5563;
-      --gray-700:  #374151;
-      --gray-900:  #111827;
+      --g50:#f0fdf4;--g100:#dcfce7;--g200:#bbf7d0;--g400:#4ade80;
+      --g500:#22c55e;--g600:#16a34a;--g700:#15803d;--g800:#166534;--g900:#14532d;
+      --gr50:#f9fafb;--gr100:#f3f4f6;--gr200:#e5e7eb;--gr300:#d1d5db;
+      --gr400:#9ca3af;--gr500:#6b7280;--gr600:#4b5563;--gr700:#374151;--gr800:#1f2937;--gr900:#111827;
     }
-
     html { scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: var(--gr600); background:#fff; line-height:1.6; }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      color: var(--gray-700);
-      background: #fff;
-      line-height: 1.6;
-    }
+    /* NAV */
+    nav { position:sticky; top:0; z-index:100; background:rgba(255,255,255,.93); backdrop-filter:blur(12px); border-bottom:1px solid var(--gr200); }
+    .nav-inner { max-width:1100px; margin:0 auto; padding:0 24px; height:60px; display:flex; align-items:center; justify-content:space-between; }
+    .nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+    .nav-logo img { height:32px; width:32px; border-radius:8px; }
+    .nav-logo span { font-weight:700; font-size:17px; color:var(--gr900); }
+    .nav-links { display:flex; align-items:center; gap:28px; list-style:none; }
+    .nav-links a { text-decoration:none; font-size:14px; font-weight:500; color:var(--gr500); transition:color .2s; }
+    .nav-links a:hover { color:var(--g600); }
+    .btn-nav { background:var(--g600)!important; color:#fff!important; padding:8px 18px; border-radius:8px; }
+    .btn-nav:hover { background:var(--g700)!important; }
 
-    /* ── NAV ─────────────────────────────── */
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--gray-200);
-    }
-    .nav-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .nav-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-    }
-    .nav-logo img {
-      height: 32px;
-      width: 32px;
-      border-radius: 8px;
-    }
-    .nav-logo span {
-      font-weight: 700;
-      font-size: 17px;
-      color: var(--gray-900);
-    }
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 28px;
-      list-style: none;
-    }
-    .nav-links a {
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--gray-600);
-      transition: color .2s;
-    }
-    .nav-links a:hover { color: var(--green-600); }
-    .btn-nav {
-      background: var(--green-600);
-      color: #fff !important;
-      padding: 8px 18px;
-      border-radius: 8px;
-      transition: background .2s !important;
-    }
-    .btn-nav:hover { background: var(--green-700) !important; color: #fff !important; }
+    /* HERO */
+    .hero { background:linear-gradient(150deg,var(--g50) 0%,#fff 55%); padding:72px 24px 60px; }
+    .hero-inner { max-width:1140px; margin:0 auto; display:grid; grid-template-columns:1fr 1.5fr; gap:56px; align-items:center; }
+    .hero-badge { display:inline-flex; align-items:center; gap:6px; background:var(--g100); color:var(--g800); font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:4px 14px; border-radius:999px; margin-bottom:20px; }
+    .hero h1 { font-size:clamp(1.9rem,3.5vw,2.9rem); font-weight:800; color:var(--gr900); line-height:1.13; margin-bottom:18px; }
+    .hero h1 span { color:var(--g600); }
+    .hero-desc { font-size:1.05rem; color:var(--gr600); margin-bottom:32px; line-height:1.75; }
+    .hero-actions { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px; }
+    .btn { display:inline-flex; align-items:center; gap:8px; padding:13px 26px; border-radius:10px; font-size:15px; font-weight:600; text-decoration:none; transition:transform .15s,box-shadow .15s; cursor:pointer; border:none; }
+    .btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.12); }
+    .btn-primary { background:var(--g600); color:#fff; box-shadow:0 4px 14px rgba(22,163,74,.35); }
+    .btn-primary:hover { background:var(--g700); }
+    .btn-secondary { background:#fff; color:var(--gr700); border:1.5px solid var(--gr200); }
+    .hero-note { font-size:12px; color:var(--gr400); }
 
-    /* ── HERO ────────────────────────────── */
-    .hero {
-      background: linear-gradient(160deg, var(--green-50) 0%, #fff 60%);
-      padding: 96px 24px 80px;
-      text-align: center;
-    }
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--green-100);
-      color: var(--green-800);
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: .05em;
-      text-transform: uppercase;
-      padding: 4px 14px;
-      border-radius: 999px;
-      margin-bottom: 28px;
-    }
-    .hero-logo {
-      width: 360px;
-      height: 360px;
-      border-radius: 60px;
-      box-shadow: 0 20px 60px rgba(22,163,74,.25);
-      margin: 0 auto 36px;
-      display: block;
-    }
-    .hero h1 {
-      font-size: clamp(2rem, 5vw, 3.25rem);
-      font-weight: 800;
-      color: var(--gray-900);
-      line-height: 1.15;
-      max-width: 740px;
-      margin: 0 auto 20px;
-    }
-    .hero h1 span { color: var(--green-600); }
-    .hero p {
-      font-size: 1.125rem;
-      color: var(--gray-600);
-      max-width: 540px;
-      margin: 0 auto 40px;
-    }
-    .hero-actions {
-      display: flex;
-      justify-content: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 14px 28px;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 600;
-      text-decoration: none;
-      transition: transform .15s, box-shadow .15s;
-      cursor: pointer;
-      border: none;
-    }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.12); }
-    .btn-primary {
-      background: var(--green-600);
-      color: #fff;
-      box-shadow: 0 4px 14px rgba(22,163,74,.35);
-    }
-    .btn-primary:hover { background: var(--green-700); }
-    .btn-secondary {
-      background: #fff;
-      color: var(--gray-700);
-      border: 1.5px solid var(--gray-200);
-    }
-    .hero-note {
-      margin-top: 18px;
-      font-size: 13px;
-      color: var(--gray-400);
-    }
+    /* APP WINDOW */
+    .app-window { background:#fff; border:1.5px solid var(--gr200); border-radius:13px; box-shadow:0 28px 90px rgba(0,0,0,.13),0 8px 32px rgba(0,0,0,.06); overflow:hidden; }
+    .win-bar { background:var(--gr100); padding:10px 14px; display:flex; align-items:center; gap:7px; border-bottom:1px solid var(--gr200); flex-shrink:0; }
+    .win-dot { width:11px; height:11px; border-radius:50%; }
+    .win-title { flex:1; text-align:center; font-size:11px; color:var(--gr400); font-weight:500; }
+    .app-body { display:flex; height:470px; }
 
-    /* ── APP PREVIEW ─────────────────────── */
-    .preview {
-      background: var(--gray-50);
-      padding: 64px 24px;
-      border-top: 1px solid var(--gray-100);
-      border-bottom: 1px solid var(--gray-100);
-    }
-    .preview-inner {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    .preview-mockup {
-      background: #fff;
-      border: 1.5px solid var(--gray-200);
-      border-radius: 16px;
-      box-shadow: 0 24px 80px rgba(0,0,0,.09);
-      overflow: hidden;
-    }
-    .mockup-bar {
-      background: var(--gray-100);
-      padding: 10px 16px;
-      display: flex;
-      gap: 7px;
-      border-bottom: 1px solid var(--gray-200);
-    }
-    .mockup-dot {
-      width: 12px; height: 12px;
-      border-radius: 50%;
-    }
-    .mockup-screen {
-      display: flex;
-      height: 380px;
-    }
-    .mockup-sidebar {
-      width: 180px;
-      background: #fff;
-      border-right: 1px solid var(--gray-200);
-      padding: 16px 12px;
-      flex-shrink: 0;
-    }
-    .mockup-sidebar-title {
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      color: var(--gray-400);
-      margin-bottom: 4px;
-      padding: 0 8px;
-    }
-    .mockup-sidebar-biz {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--gray-900);
-      padding: 0 8px;
-      margin-bottom: 16px;
-    }
-    .mockup-nav-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      border-radius: 7px;
-      font-size: 12px;
-      font-weight: 500;
-      margin-bottom: 2px;
-    }
-    .mockup-nav-item.active {
-      background: var(--green-50);
-      color: var(--green-700);
-      font-weight: 600;
-    }
-    .mockup-nav-item:not(.active) { color: var(--gray-600); }
-    .mockup-content {
-      flex: 1;
-      padding: 20px;
-      overflow: hidden;
-    }
-    .mockup-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 12px;
-    }
-    .mockup-card {
-      background: var(--gray-50);
-      border: 1.5px solid var(--gray-200);
-      border-radius: 8px;
-      padding: 12px;
-    }
-    .mockup-card-name {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--gray-800);
-      margin-bottom: 4px;
-    }
-    .mockup-card-price {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--green-600);
-    }
-    .mockup-search {
-      background: var(--gray-50);
-      border: 1.5px solid var(--gray-200);
-      border-radius: 7px;
-      padding: 7px 12px;
-      font-size: 11px;
-      color: var(--gray-400);
-      width: 100%;
-    }
+    /* SIDEBAR */
+    .app-sb { width:186px; flex-shrink:0; background:#fff; border-right:1px solid var(--gr200); display:flex; flex-direction:column; }
+    .sb-head { padding:14px 14px 10px; border-bottom:1px solid var(--gr100); }
+    .sb-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.09em; color:var(--gr400); margin-bottom:2px; }
+    .sb-biz { font-size:12.5px; font-weight:700; color:var(--gr900); }
+    .sb-nav { flex:1; padding:8px 8px; display:flex; flex-direction:column; gap:1px; }
+    .ni { display:flex; align-items:center; gap:8px; padding:7px 9px; border-radius:7px; font-size:12px; font-weight:500; cursor:pointer; transition:all .12s; color:var(--gr600); border:none; background:none; width:100%; text-align:left; }
+    .ni:hover { background:var(--gr100); color:var(--gr800); }
+    .ni.on { background:var(--g50); color:var(--g700); font-weight:600; }
+    .sb-foot { padding:10px 14px; border-top:1px solid var(--gr100); }
+    .sb-ver { font-size:9.5px; color:var(--gr400); text-align:center; }
 
-    /* ── FEATURES ────────────────────────── */
-    .features {
-      padding: 96px 24px;
-    }
-    .section-tag {
-      text-align: center;
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      color: var(--green-600);
-      margin-bottom: 12px;
-    }
-    .section-title {
-      text-align: center;
-      font-size: clamp(1.5rem, 3vw, 2.25rem);
-      font-weight: 800;
-      color: var(--gray-900);
-      margin-bottom: 12px;
-    }
-    .section-sub {
-      text-align: center;
-      color: var(--gray-600);
-      font-size: 1.05rem;
-      max-width: 520px;
-      margin: 0 auto 64px;
-    }
-    .features-grid {
-      max-width: 1060px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 28px;
-    }
-    .feature-card {
-      background: #fff;
-      border: 1.5px solid var(--gray-200);
-      border-radius: 16px;
-      padding: 32px 28px;
-      transition: border-color .2s, box-shadow .2s, transform .2s;
-    }
-    .feature-card:hover {
-      border-color: var(--green-400);
-      box-shadow: 0 12px 40px rgba(34,197,94,.1);
-      transform: translateY(-4px);
-    }
-    .feature-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
-      background: var(--green-50);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
-    .feature-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--gray-900);
-      margin-bottom: 8px;
-    }
-    .feature-desc {
-      font-size: 14px;
-      color: var(--gray-600);
-      line-height: 1.65;
-    }
+    /* CONTENT */
+    .app-main { flex:1; overflow:hidden; background:var(--gr50); display:flex; flex-direction:column; }
+    .tp { display:none; height:100%; flex-direction:column; }
+    .tp.on { display:flex; }
+    .ph { background:#fff; border-bottom:1px solid var(--gr200); padding:11px 16px; flex-shrink:0; }
+    .pt { font-size:14.5px; font-weight:700; color:var(--gr900); }
+    .pb { flex:1; overflow-y:auto; padding:12px; }
 
-    /* ── HOW IT WORKS ────────────────────── */
-    .how {
-      background: var(--green-800);
-      padding: 96px 24px;
-      color: #fff;
-    }
-    .how .section-tag { color: var(--green-400); }
-    .how .section-title { color: #fff; }
-    .how .section-sub { color: rgba(255,255,255,.65); }
-    .steps {
-      max-width: 880px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 12px;
-      position: relative;
-    }
-    .step {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      padding: 28px 20px;
-      background: rgba(255,255,255,.07);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 14px;
-    }
-    .step-num {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: var(--green-500);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 16px;
-    }
-    .step-title {
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      color: #fff;
-    }
-    .step-desc {
-      font-size: 13px;
-      color: rgba(255,255,255,.6);
-      line-height: 1.6;
-    }
+    /* VENTAS */
+    .sl { display:flex; gap:10px; height:100%; }
+    .cat { flex:1; display:flex; flex-direction:column; }
+    .sbox { display:flex; align-items:center; gap:6px; background:#fff; border:1.5px solid var(--gr200); border-radius:7px; padding:6px 10px; font-size:11px; color:var(--gr400); margin-bottom:9px; flex-shrink:0; }
+    .pg { display:grid; grid-template-columns:1fr 1fr; gap:7px; overflow-y:auto; flex:1; }
+    .pc { background:#fff; border:1.5px solid var(--gr200); border-radius:9px; padding:9px 11px; cursor:pointer; transition:all .12s; }
+    .pc:hover { border-color:var(--g400); background:var(--g50); transform:translateY(-1px); }
+    .pc.sel { border-color:var(--g500); background:var(--g50); }
+    .pn { font-size:11px; font-weight:600; color:var(--gr800); margin-bottom:3px; }
+    .pp { font-size:13px; font-weight:700; color:var(--g600); }
+    .cp { width:155px; flex-shrink:0; background:#fff; border-radius:9px; border:1.5px solid var(--gr200); display:flex; flex-direction:column; overflow:hidden; }
+    .ch { padding:9px 11px 7px; border-bottom:1px solid var(--gr100); font-size:11.5px; font-weight:700; color:var(--gr800); }
+    .ci-list { flex:1; overflow-y:auto; padding:7px; }
+    .ci { display:flex; align-items:center; gap:4px; padding:4px 0; border-bottom:1px solid var(--gr100); }
+    .ci:last-child { border:none; }
+    .ci-name { font-size:10px; color:var(--gr600); flex:1; line-height:1.3; }
+    .ci-ctrl { display:flex; align-items:center; gap:3px; }
+    .qb { width:17px; height:17px; border-radius:50%; border:1px solid var(--gr300); background:var(--gr50); font-size:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--gr500); }
+    .qb:hover { background:var(--g50); border-color:var(--g400); color:var(--g700); }
+    .cq { font-size:10.5px; font-weight:700; min-width:15px; text-align:center; }
+    .ce { padding:18px 8px; text-align:center; font-size:10.5px; color:var(--gr400); }
+    .cf { padding:9px 11px; border-top:1px solid var(--gr200); }
+    .ct-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:7px; }
+    .ct-lbl { font-size:10px; color:var(--gr400); }
+    .ct-val { font-size:14px; font-weight:800; color:var(--gr900); }
+    .bco { width:100%; padding:8px; background:var(--g600); color:#fff; border:none; border-radius:7px; font-size:11.5px; font-weight:700; cursor:pointer; }
+    .bco:hover { background:var(--g700); }
+    .bco:disabled { background:var(--gr300); cursor:default; }
+    .ok-badge { display:none; align-items:center; gap:5px; background:var(--g100); color:var(--g800); border-radius:7px; padding:5px 10px; font-size:10.5px; font-weight:600; margin-top:7px; }
+    .ok-badge.show { display:flex; }
 
-    /* ── DOWNLOAD ────────────────────────── */
-    .download {
-      padding: 96px 24px;
-      text-align: center;
-      background: linear-gradient(160deg, #fff 0%, var(--green-50) 100%);
-    }
-    .download-logo {
-      width: 80px;
-      height: 80px;
-      border-radius: 20px;
-      box-shadow: 0 12px 40px rgba(22,163,74,.2);
-      margin: 0 auto 32px;
-      display: block;
-    }
-    .download h2 {
-      font-size: clamp(1.5rem, 3vw, 2.25rem);
-      font-weight: 800;
-      color: var(--gray-900);
-      margin-bottom: 14px;
-    }
-    .download p {
-      color: var(--gray-600);
-      margin-bottom: 36px;
-      max-width: 460px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .sys-reqs {
-      display: flex;
-      justify-content: center;
-      gap: 24px;
-      flex-wrap: wrap;
-      margin-top: 32px;
-    }
-    .req {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 13px;
-      color: var(--gray-500);
-    }
-    .req-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--green-500);
-    }
+    /* HISTORY */
+    .hs { margin-top:6px; display:flex; gap:18px; }
+    .hst-lbl { font-size:9px; text-transform:uppercase; letter-spacing:.06em; color:var(--gr400); font-weight:600; }
+    .hst-val { font-size:17px; font-weight:800; }
+    .ot { width:100%; background:#fff; border:1px solid var(--gr200); border-radius:9px; overflow:hidden; font-size:11.5px; }
+    .ot th { background:var(--gr50); padding:7px 12px; text-align:left; font-size:9px; text-transform:uppercase; letter-spacing:.06em; color:var(--gr400); border-bottom:1px solid var(--gr200); }
+    .ot td { padding:7px 12px; border-bottom:1px solid var(--gr100); color:var(--gr700); }
+    .ot tr:last-child td { border:none; }
+    .ot tr:hover td { background:var(--gr50); }
+    .ot-num { font-weight:700; color:var(--gr900); }
+    .ot-tot { font-weight:700; text-align:right; }
 
-    /* ── FOOTER ──────────────────────────── */
-    footer {
-      background: var(--gray-900);
-      color: rgba(255,255,255,.45);
-      text-align: center;
-      padding: 32px 24px;
-      font-size: 13px;
-    }
-    footer strong { color: rgba(255,255,255,.8); }
+    /* BOARD */
+    .bc { display:flex; flex-wrap:wrap; gap:9px; align-content:flex-start; }
+    .bcard { background:#fff; border:1.5px solid var(--gr200); border-radius:10px; padding:11px; width:calc(50% - 5px); box-shadow:0 2px 8px rgba(0,0,0,.04); transition:opacity .3s; }
+    .bcard.done { opacity:.4; }
+    .bcard-num { font-size:9.5px; color:var(--gr400); font-weight:600; text-transform:uppercase; margin-bottom:3px; }
+    .bcard-items { font-size:11.5px; color:var(--gr700); margin-bottom:9px; line-height:1.4; }
+    .bdone { width:100%; padding:5px; border:1px solid var(--g500); background:var(--g50); color:var(--g700); border-radius:6px; font-size:10.5px; font-weight:600; cursor:pointer; }
+    .bdone:hover { background:var(--g600); color:#fff; border-color:var(--g600); }
+    .bdone:disabled { opacity:.4; cursor:default; }
 
-    @media (max-width: 640px) {
-      .nav-links { display: none; }
-      .mockup-sidebar { display: none; }
-    }
+    /* AI */
+    .ai-h { background:linear-gradient(135deg,#052e16,#14532d,#16a34a); padding:14px 16px; flex-shrink:0; display:flex; justify-content:space-between; align-items:center; }
+    .ai-ht { font-size:15px; font-weight:800; color:#fff; }
+    .ai-hs { font-size:10px; color:rgba(255,255,255,.6); margin-top:2px; }
+    .ai-hv { font-size:18px; font-weight:800; color:#fff; text-align:right; }
+    .ai-hvl { font-size:9.5px; color:rgba(255,255,255,.55); }
+    .ai-sc { display:flex; gap:7px; margin-bottom:10px; }
+    .ai-s { flex:1; background:#fff; border:1px solid var(--gr200); border-radius:9px; padding:10px; }
+    .ai-s.pr { background:linear-gradient(135deg,#14532d,#16a34a); border:none; }
+    .ai-si { font-size:16px; margin-bottom:3px; }
+    .ai-sv { font-size:13px; font-weight:800; color:var(--gr900); }
+    .ai-s.pr .ai-sv { color:#fff; }
+    .ai-sl { font-size:9.5px; color:var(--gr400); font-weight:600; }
+    .ai-s.pr .ai-sl { color:rgba(255,255,255,.6); }
+    .ai-cr { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:9px; }
+    .ai-cb { background:#fff; border:1px solid var(--gr200); border-radius:9px; padding:10px; }
+    .ai-ct { font-size:10.5px; font-weight:700; color:var(--gr800); margin-bottom:1px; }
+    .ai-csub { font-size:9.5px; color:var(--gr400); margin-bottom:8px; }
+    .bchart { display:flex; align-items:flex-end; gap:3px; height:55px; }
+    .bbar { flex:1; background:linear-gradient(to top,#15803d,#22c55e); border-radius:3px 3px 0 0; min-height:2px; }
+    .blbls { display:flex; gap:3px; margin-top:3px; }
+    .blbl { flex:1; font-size:8px; color:var(--gr400); text-align:center; }
+    .hb { margin-bottom:7px; }
+    .hb-h { display:flex; justify-content:space-between; margin-bottom:3px; font-size:10px; }
+    .hb-n { font-weight:600; color:var(--gr700); }
+    .hb-v { color:var(--gr400); }
+    .hb-tr { height:5px; background:var(--gr100); border-radius:3px; overflow:hidden; }
+    .hb-f { height:100%; background:linear-gradient(to right,#15803d,#22c55e); border-radius:3px; }
+
+    /* CALENDAR */
+    .cal-l { display:flex; height:100%; }
+    .cal-gp { width:215px; flex-shrink:0; background:#fff; border-right:1px solid var(--gr200); padding:11px; display:flex; flex-direction:column; }
+    .cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:9px; }
+    .cnb { width:24px; height:24px; border:1px solid var(--gr200); border-radius:5px; background:none; cursor:pointer; font-size:12px; color:var(--gr500); display:flex; align-items:center; justify-content:center; }
+    .cnb:hover { background:var(--gr100); }
+    .cal-m { font-size:11.5px; font-weight:700; color:var(--gr800); }
+    .cal-dh { display:grid; grid-template-columns:repeat(7,1fr); margin-bottom:3px; }
+    .cal-dn { font-size:8.5px; font-weight:600; color:var(--gr400); text-align:center; padding:2px 0; }
+    .cal-days { display:grid; grid-template-columns:repeat(7,1fr); gap:1px; }
+    .cd { aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:5px; font-size:10.5px; font-weight:500; cursor:pointer; position:relative; color:var(--gr600); border:none; background:none; }
+    .cd:hover { background:var(--gr100); }
+    .cd.today { background:rgba(22,163,74,.1); color:var(--g700); font-weight:700; }
+    .cd.sel { background:var(--g600)!important; color:#fff!important; font-weight:700; }
+    .cd-dot { position:absolute; bottom:2px; width:4px; height:4px; border-radius:50%; background:var(--g500); }
+    .cd.sel .cd-dot { background:rgba(255,255,255,.7); }
+    .cal-sum { margin-top:10px; padding-top:9px; border-top:1px solid var(--gr100); flex:1; }
+    .cal-sum-lbl { font-size:9px; text-transform:uppercase; letter-spacing:.06em; color:var(--gr400); font-weight:600; margin-bottom:7px; }
+    .cal-sum-row { display:flex; justify-content:space-between; margin-bottom:4px; font-size:10.5px; }
+    .cal-sum-k { color:var(--gr500); }
+    .cal-sum-v { font-weight:700; color:var(--gr800); }
+    .cal-sum-v.g { color:var(--g600); }
+    .cal-dp { flex:1; padding:13px; overflow-y:auto; }
+    .cal-emp { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--gr400); font-size:11.5px; text-align:center; gap:8px; }
+    .cal-dh2 { font-size:13.5px; font-weight:700; color:var(--gr900); margin-bottom:10px; text-transform:capitalize; }
+    .cal-ds { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-bottom:9px; }
+    .cal-sb { background:#fff; border:1px solid var(--gr200); border-radius:7px; padding:9px; }
+    .cal-slbl { font-size:9px; text-transform:uppercase; letter-spacing:.06em; color:var(--gr400); font-weight:600; margin-bottom:2px; }
+    .cal-sval { font-size:15px; font-weight:800; color:var(--g600); }
+    .cal-sval.dk { color:var(--gr800); }
+    .cal-ob { background:#fff; border:1px solid var(--gr200); border-radius:7px; overflow:hidden; margin-bottom:9px; }
+    .cal-ot { font-size:10.5px; font-weight:700; color:var(--gr700); padding:7px 11px; border-bottom:1px solid var(--gr100); }
+    .cal-or { padding:6px 11px; border-bottom:1px solid var(--gr100); display:flex; justify-content:space-between; font-size:10.5px; }
+    .cal-or:last-child { border:none; }
+    .cal-nb { background:#fff; border:1px solid var(--gr200); border-radius:7px; padding:9px; }
+    .cal-nt { font-size:10.5px; font-weight:700; color:var(--gr700); margin-bottom:5px; }
+    .cal-ni { width:100%; font-size:10.5px; color:var(--gr700); border:none; outline:none; resize:none; background:transparent; line-height:1.5; }
+
+    /* SETTINGS */
+    .ss { background:#fff; border:1px solid var(--gr200); border-radius:9px; padding:12px 14px; margin-bottom:9px; }
+    .ss-t { font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--gr400); margin-bottom:10px; }
+    .sr { display:flex; align-items:center; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--gr100); }
+    .sr:last-child { border:none; }
+    .sr-l { font-size:11.5px; font-weight:500; color:var(--gr700); }
+    .tog { width:38px; height:21px; border-radius:11px; background:var(--gr300); cursor:pointer; position:relative; transition:background .2s; border:none; flex-shrink:0; }
+    .tog.on { background:var(--g600); }
+    .tog::after { content:''; position:absolute; top:2px; left:2px; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.2); transition:transform .2s; }
+    .tog.on::after { transform:translateX(17px); }
+    .lsel { font-size:11px; border:1px solid var(--gr200); border-radius:6px; padding:3px 7px; color:var(--gr700); background:#fff; cursor:pointer; }
+
+    /* DARK MODE */
+    .app-window.dark { background:#1f2937; border-color:#374151; }
+    .dark .win-bar { background:#374151; border-color:#4b5563; }
+    .dark .win-title { color:#6b7280; }
+    .dark .app-sb { background:#1f2937; border-color:#374151; }
+    .dark .sb-head { border-color:#374151; }
+    .dark .sb-label { color:#6b7280; }
+    .dark .sb-biz { color:#f9fafb; }
+    .dark .ni { color:#9ca3af; }
+    .dark .ni:hover { background:#374151; color:#e5e7eb; }
+    .dark .ni.on { background:rgba(22,163,74,.2); color:#4ade80; }
+    .dark .sb-foot { border-color:#374151; }
+    .dark .app-main { background:#111827; }
+    .dark .ph { background:#1f2937; border-color:#374151; }
+    .dark .pt { color:#f9fafb; }
+    .dark .sbox { background:#1f2937; border-color:#374151; color:#9ca3af; }
+    .dark .pc { background:#1f2937; border-color:#374151; }
+    .dark .pn { color:#e5e7eb; }
+    .dark .pc:hover,.dark .pc.sel { background:rgba(22,163,74,.12); border-color:#22c55e; }
+    .dark .cp { background:#1f2937; border-color:#374151; }
+    .dark .ch { color:#e5e7eb; border-color:#374151; }
+    .dark .ci { border-color:#374151; }
+    .dark .ci-name { color:#d1d5db; }
+    .dark .cf { border-color:#374151; }
+    .dark .ct-val { color:#f9fafb; }
+    .dark .ot { background:#1f2937; border-color:#374151; }
+    .dark .ot th { background:#111827; border-color:#374151; }
+    .dark .ot td { color:#d1d5db; border-color:#374151; }
+    .dark .ot-num,.dark .ot-tot { color:#f9fafb; }
+    .dark .bcard { background:#1f2937; border-color:#374151; }
+    .dark .bcard-items { color:#d1d5db; }
+    .dark .ai-s { background:#1f2937; border-color:#374151; }
+    .dark .ai-sv { color:#f9fafb; }
+    .dark .ai-cb { background:#1f2937; border-color:#374151; }
+    .dark .ai-ct { color:#e5e7eb; }
+    .dark .cal-gp { background:#1f2937; border-color:#374151; }
+    .dark .cal-m { color:#e5e7eb; }
+    .dark .cd { color:#9ca3af; }
+    .dark .cd:hover { background:#374151; }
+    .dark .cal-sum-lbl { color:#6b7280; }
+    .dark .cal-dp { background:#111827; }
+    .dark .cal-dh2 { color:#f9fafb; }
+    .dark .cal-sb { background:#1f2937; border-color:#374151; }
+    .dark .cal-sval.dk { color:#f9fafb; }
+    .dark .cal-ob { background:#1f2937; border-color:#374151; }
+    .dark .cal-ot { color:#d1d5db; border-color:#374151; }
+    .dark .cal-or { border-color:#374151; color:#d1d5db; }
+    .dark .cal-nb { background:#1f2937; border-color:#374151; }
+    .dark .cal-nt { color:#d1d5db; }
+    .dark .cal-ni { color:#d1d5db; }
+    .dark .ss { background:#1f2937; border-color:#374151; }
+    .dark .ss-t { color:#6b7280; }
+    .dark .sr { border-color:#374151; }
+    .dark .sr-l { color:#d1d5db; }
+    .dark .lsel { background:#374151; border-color:#4b5563; color:#e5e7eb; }
+    .dark .cal-sum-v { color:#e5e7eb; }
+    .dark .cnb { border-color:#4b5563; color:#9ca3af; }
+    .dark .cnb:hover { background:#374151; }
+
+    /* FEATURES */
+    .features { padding:88px 24px; }
+    .section-tag { text-align:center; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--g600); margin-bottom:12px; }
+    .section-title { text-align:center; font-size:clamp(1.5rem,3vw,2.25rem); font-weight:800; color:var(--gr900); margin-bottom:12px; }
+    .section-sub { text-align:center; color:var(--gr600); font-size:1.05rem; max-width:520px; margin:0 auto 56px; }
+    .feat-grid { max-width:1060px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:22px; }
+    .feat { background:#fff; border:1.5px solid var(--gr200); border-radius:16px; padding:26px 22px; transition:all .2s; }
+    .feat:hover { border-color:var(--g400); box-shadow:0 12px 40px rgba(34,197,94,.1); transform:translateY(-4px); }
+    .feat.new { border-color:var(--g200); background:linear-gradient(135deg,var(--g50),#fff); }
+    .feat-icon { width:46px; height:46px; border-radius:12px; background:var(--g50); display:flex; align-items:center; justify-content:center; font-size:21px; margin-bottom:14px; }
+    .feat-title { font-size:15px; font-weight:700; color:var(--gr900); margin-bottom:7px; }
+    .feat-desc { font-size:13px; color:var(--gr600); line-height:1.65; }
+    .badge { background:var(--g600); color:#fff; font-size:10px; font-weight:700; padding:2px 8px; border-radius:999px; vertical-align:middle; margin-left:5px; }
+
+    /* HOW */
+    .how { background:var(--g800); padding:88px 24px; }
+    .how .section-tag { color:var(--g400); }
+    .how .section-title { color:#fff; }
+    .how .section-sub { color:rgba(255,255,255,.65); }
+    .steps { max-width:900px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; }
+    .step { display:flex; flex-direction:column; align-items:center; text-align:center; padding:24px 16px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:14px; }
+    .step-n { width:40px; height:40px; border-radius:50%; background:var(--g500); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:800; color:#fff; margin-bottom:13px; }
+    .step-t { font-size:14px; font-weight:700; margin-bottom:7px; color:#fff; }
+    .step-d { font-size:12px; color:rgba(255,255,255,.6); line-height:1.6; }
+
+    /* DOWNLOAD */
+    .dl { padding:88px 24px; text-align:center; background:linear-gradient(160deg,#fff 0%,var(--g50) 100%); }
+    .dl-logo { width:70px; height:70px; border-radius:18px; box-shadow:0 12px 40px rgba(22,163,74,.2); margin:0 auto 26px; display:block; }
+    .dl h2 { font-size:clamp(1.5rem,3vw,2.2rem); font-weight:800; color:var(--gr900); margin-bottom:12px; }
+    .dl p { color:var(--gr600); margin-bottom:30px; max-width:420px; margin-left:auto; margin-right:auto; }
+    .reqs { display:flex; justify-content:center; gap:20px; flex-wrap:wrap; margin-top:24px; }
+    .req { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--gr400); }
+    .req-dot { width:5px; height:5px; border-radius:50%; background:var(--g500); }
+
+    /* FOOTER */
+    footer { background:var(--gr900); color:rgba(255,255,255,.4); text-align:center; padding:28px 24px; font-size:13px; }
+    footer strong { color:rgba(255,255,255,.75); }
+
+    @media(max-width:960px) { .hero-inner { grid-template-columns:1fr; } .demo-wrapper { display:none!important; } .hero { text-align:center; } .hero-actions { justify-content:center; } }
+    @media(max-width:640px) { .nav-links { display:none; } }
   </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <div class="nav-inner">
     <a href="#" class="nav-logo">
-      <img src="logo-icon.png" alt="Your Business" />
+      <img src="logo-icon.png" alt="Your Business">
       <span>Your Business</span>
     </a>
     <ul class="nav-links">
+      <li><a href="#demo">Demo</a></li>
       <li><a href="#features">Funciones</a></li>
       <li><a href="#how">Cómo funciona</a></li>
       <li><a href="#download" class="btn-nav">Descargar gratis</a></li>
@@ -483,74 +320,229 @@
   </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-  <img src="logo-full.png" alt="Your Business" class="hero-logo" />
-  <h1>El sistema POS que<br><span>tu negocio necesitaba</span></h1>
-  <p>Registrá ventas, gestioná tus productos y controlá tus pedidos desde una app de escritorio simple, rápida y gratuita.</p>
-  <div class="hero-actions">
-    <a href="#download" class="btn btn-primary">
-      ⬇ Descargar gratis
-    </a>
-    <a href="#features" class="btn btn-secondary">
-      Ver funciones
-    </a>
-  </div>
-  <p class="hero-note">Solo para Windows · Sin costo · Gratis para siempre</p>
-</section>
-
-<!-- APP PREVIEW -->
-<section class="preview">
-  <div class="preview-inner">
-    <div class="preview-mockup">
-      <div class="mockup-bar">
-        <div class="mockup-dot" style="background:#ff5f57"></div>
-        <div class="mockup-dot" style="background:#ffbd2e"></div>
-        <div class="mockup-dot" style="background:#28c840"></div>
+<section class="hero" id="demo">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">⚡ v1.2.1 — Multi-idioma + Calendario + IA</div>
+      <h1>El sistema POS que<br><span>tu negocio necesitaba</span></h1>
+      <p class="hero-desc">Registrá ventas, gestioná productos, controlá pedidos y analizá tus resultados con inteligencia artificial. Simple, rápido y completamente gratis.</p>
+      <div class="hero-actions">
+        <a href="#download" class="btn btn-primary">⬇ Descargar gratis</a>
+        <a href="#features" class="btn btn-secondary">Ver funciones</a>
       </div>
-      <div class="mockup-screen">
-        <div class="mockup-sidebar">
-          <div class="mockup-sidebar-title">Tu negocio</div>
-          <div class="mockup-sidebar-biz">Mi Hamburguesería</div>
-          <div class="mockup-nav-item active">🛒 Ventas</div>
-          <div class="mockup-nav-item">📦 Productos</div>
-          <div class="mockup-nav-item">📋 Historial</div>
-          <div class="mockup-nav-item">📌 Tablero</div>
-        </div>
-        <div class="mockup-content">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-            <span style="font-size:13px;font-weight:700;color:#111827">Catálogo</span>
-            <span style="font-size:11px;color:#9ca3af">3 productos encontrados</span>
-          </div>
-          <div class="mockup-search">🔍 Buscar producto...</div>
-          <div class="mockup-grid">
-            <div class="mockup-card">
-              <div class="mockup-card-name">Hamburguesa clásica</div>
-              <div class="mockup-card-price">$3.500</div>
-            </div>
-            <div class="mockup-card" style="border-color:#22c55e;background:#f0fdf4">
-              <div class="mockup-card-name" style="color:#166534">Papas fritas</div>
-              <div class="mockup-card-price">$1.800</div>
-            </div>
-            <div class="mockup-card">
-              <div class="mockup-card-name">Bebida 500ml</div>
-              <div class="mockup-card-price">$900</div>
-            </div>
-            <div class="mockup-card">
-              <div class="mockup-card-name">Combo familiar</div>
-              <div class="mockup-card-price">$8.200</div>
-            </div>
-            <div class="mockup-card">
-              <div class="mockup-card-name">Milanesa napol.</div>
-              <div class="mockup-card-price">$4.100</div>
-            </div>
-            <div class="mockup-card" style="display:flex;align-items:center;justify-content:center;background:var(--gray-50)">
-              <span style="font-size:11px;color:#9ca3af">Ver más...</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <p class="hero-note">Solo para Windows · Sin costo · Gratis para siempre</p>
     </div>
+
+    <div class="demo-wrapper" style="position:relative">
+      <div class="app-window" id="appWindow">
+        <div class="win-bar">
+          <div class="win-dot" style="background:#ff5f57"></div>
+          <div class="win-dot" style="background:#ffbd2e"></div>
+          <div class="win-dot" style="background:#28c840"></div>
+          <div class="win-title">Your Business — Mi Hamburguesería</div>
+          <span style="font-size:9px;font-weight:700;background:#f59e0b;color:#fff;padding:2px 7px;border-radius:4px;letter-spacing:.04em">DEMO</span>
+        </div>
+        <div class="app-body">
+          <!-- SIDEBAR -->
+          <aside class="app-sb">
+            <div class="sb-head">
+              <div class="sb-label">Tu negocio</div>
+              <div class="sb-biz">Mi Hamburguesería</div>
+            </div>
+            <nav class="sb-nav">
+              <button class="ni on" onclick="switchTab('sales')">🛒 Ventas</button>
+              <button class="ni" onclick="switchTab('products')">📦 Productos</button>
+              <button class="ni" onclick="switchTab('history')">📋 Historial</button>
+              <button class="ni" onclick="switchTab('board')">📌 Tablero</button>
+              <button class="ni" onclick="switchTab('ai')">✨ Análisis IA</button>
+              <button class="ni" onclick="switchTab('calendar')">📅 Calendario</button>
+              <button class="ni" onclick="switchTab('settings')">⚙️ Configuración</button>
+            </nav>
+            <div class="sb-foot"><div class="sb-ver">Your Business v1.2.1</div></div>
+          </aside>
+
+          <!-- MAIN -->
+          <div class="app-main">
+
+            <!-- VENTAS -->
+            <div class="tp on" id="tp-sales">
+              <div class="ph"><div class="pt">Ventas</div></div>
+              <div class="pb">
+                <div class="sl">
+                  <div class="cat">
+                    <div class="sbox">🔍 Buscar producto...</div>
+                    <div class="pg" id="productGrid"></div>
+                  </div>
+                  <div class="cp">
+                    <div class="ch">Carrito</div>
+                    <div class="ci-list" id="cartItems"><div class="ce">Seleccioná productos</div></div>
+                    <div class="cf">
+                      <div class="ct-row">
+                        <span class="ct-lbl">Total</span>
+                        <span class="ct-val" id="cartTotal">$0</span>
+                      </div>
+                      <button class="bco" id="checkoutBtn" onclick="checkout()" disabled>Confirmar venta</button>
+                      <div class="ok-badge" id="okBadge">✓ Orden #<span id="okNum"></span> registrada</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PRODUCTS -->
+            <div class="tp" id="tp-products">
+              <div class="ph" style="display:flex;align-items:center;justify-content:space-between">
+                <div class="pt">Productos</div>
+                <span style="font-size:10px;background:var(--g50);color:var(--g700);padding:4px 10px;border-radius:6px;font-weight:600">6 productos</span>
+              </div>
+              <div class="pb">
+                <div style="background:#fff;border:1px solid var(--gr200);border-radius:9px;overflow:hidden;font-size:12px">
+                  <div style="display:grid;grid-template-columns:1fr auto auto;gap:0;border-bottom:1px solid var(--gr200);background:var(--gr50)">
+                    <div style="padding:7px 12px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gr400)">Nombre</div>
+                    <div style="padding:7px 12px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gr400);text-align:right">Precio</div>
+                    <div style="padding:7px 12px;width:80px"></div>
+                  </div>
+                  <div id="productTable"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- HISTORY -->
+            <div class="tp" id="tp-history">
+              <div class="ph">
+                <div class="pt">Historial del día</div>
+                <div class="hs">
+                  <div><div class="hst-lbl">Total vendido</div><div class="hst-val" id="histTotal" style="color:var(--g600)">$0</div></div>
+                  <div><div class="hst-lbl">Órdenes</div><div class="hst-val" id="histCount" style="color:var(--gr800)">0</div></div>
+                </div>
+              </div>
+              <div class="pb">
+                <table class="ot" id="histTable">
+                  <thead><tr><th>Orden</th><th>Productos</th><th style="text-align:right">Total</th></tr></thead>
+                  <tbody id="histBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- BOARD -->
+            <div class="tp" id="tp-board">
+              <div class="ph"><div class="pt">Tablero de pedidos</div></div>
+              <div class="pb"><div class="bc" id="boardCards"></div></div>
+            </div>
+
+            <!-- AI -->
+            <div class="tp" id="tp-ai" style="overflow:hidden">
+              <div class="ai-h">
+                <div>
+                  <div class="ai-ht">✨ Análisis IA</div>
+                  <div class="ai-hs">Estadísticas de Mi Hamburguesería</div>
+                </div>
+                <div>
+                  <div class="ai-hv" id="aiTotalHoy">$17.000</div>
+                  <div class="ai-hvl">ingresos hoy</div>
+                </div>
+              </div>
+              <div class="pb" style="background:var(--gr50)">
+                <div class="ai-sc">
+                  <div class="ai-s pr"><div class="ai-si">🛒</div><div class="ai-sv" id="aiCount">5</div><div class="ai-sl">Ventas hoy</div></div>
+                  <div class="ai-s"><div class="ai-si">📈</div><div class="ai-sv">Vie</div><div class="ai-sl">Mejor día</div></div>
+                  <div class="ai-s"><div class="ai-si">⭐</div><div class="ai-sv" style="font-size:10.5px">Hamburguesa</div><div class="ai-sl">Prod. estrella</div></div>
+                </div>
+                <div class="ai-cr">
+                  <div class="ai-cb">
+                    <div class="ai-ct">Ventas por hora — hoy</div>
+                    <div class="ai-csub">Órdenes por franja (8am–6pm)</div>
+                    <div class="bchart">
+                      <div class="bbar" style="height:20%"></div><div class="bbar" style="height:40%"></div>
+                      <div class="bbar" style="height:70%"></div><div class="bbar" style="height:100%"></div>
+                      <div class="bbar" style="height:55%"></div><div class="bbar" style="height:80%"></div>
+                      <div class="bbar" style="height:35%"></div><div class="bbar" style="height:15%"></div>
+                    </div>
+                    <div class="blbls"><span class="blbl">8a</span><span class="blbl">9a</span><span class="blbl">10a</span><span class="blbl">11a</span><span class="blbl">12p</span><span class="blbl">1p</span><span class="blbl">2p</span><span class="blbl">3p</span></div>
+                  </div>
+                  <div class="ai-cb">
+                    <div class="ai-ct">Ingresos últimos 7 días</div>
+                    <div class="ai-csub">Total diario en COP</div>
+                    <div class="bchart">
+                      <div class="bbar" style="height:45%"></div><div class="bbar" style="height:60%"></div>
+                      <div class="bbar" style="height:30%"></div><div class="bbar" style="height:85%"></div>
+                      <div class="bbar" style="height:50%"></div><div class="bbar" style="height:100%"></div>
+                      <div class="bbar" style="height:70%"></div>
+                    </div>
+                    <div class="blbls"><span class="blbl">Lun</span><span class="blbl">Mar</span><span class="blbl">Mié</span><span class="blbl">Jue</span><span class="blbl">Vie</span><span class="blbl">Sáb</span><span class="blbl">Hoy</span></div>
+                  </div>
+                </div>
+                <div style="background:#fff;border:1px solid var(--gr200);border-radius:9px;padding:11px">
+                  <div style="font-size:11px;font-weight:700;color:var(--gr800);margin-bottom:10px">Top productos más vendidos</div>
+                  <div class="hb"><div class="hb-h"><span class="hb-n">Hamburguesa clásica</span><span class="hb-v">38 uds · $133.000</span></div><div class="hb-tr"><div class="hb-f" style="width:100%"></div></div></div>
+                  <div class="hb"><div class="hb-h"><span class="hb-n">Papas fritas</span><span class="hb-v">31 uds · $55.800</span></div><div class="hb-tr"><div class="hb-f" style="width:82%"></div></div></div>
+                  <div class="hb"><div class="hb-h"><span class="hb-n">Bebida 500ml</span><span class="hb-v">28 uds · $25.200</span></div><div class="hb-tr"><div class="hb-f" style="width:74%"></div></div></div>
+                  <div class="hb"><div class="hb-h"><span class="hb-n">Combo familiar</span><span class="hb-v">14 uds · $114.800</span></div><div class="hb-tr"><div class="hb-f" style="width:37%"></div></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CALENDAR -->
+            <div class="tp" id="tp-calendar">
+              <div class="ph"><div class="pt">Calendario</div></div>
+              <div style="flex:1;display:flex;overflow:hidden">
+                <div class="cal-gp">
+                  <div class="cal-nav">
+                    <button class="cnb" onclick="calPrev()">‹</button>
+                    <span class="cal-m" id="calMonthLabel"></span>
+                    <button class="cnb" onclick="calNext()">›</button>
+                  </div>
+                  <div class="cal-dh" id="calDayNames"></div>
+                  <div class="cal-days" id="calDays"></div>
+                  <div class="cal-sum">
+                    <div class="cal-sum-lbl" id="calSumLabel"></div>
+                    <div class="cal-sum-row"><span class="cal-sum-k">Total vendido</span><span class="cal-sum-v g" id="calSumTotal">$0</span></div>
+                    <div class="cal-sum-row"><span class="cal-sum-k">Órdenes</span><span class="cal-sum-v" id="calSumOrders">0</span></div>
+                    <div class="cal-sum-row"><span class="cal-sum-k">Días con ventas</span><span class="cal-sum-v" id="calSumDays">0</span></div>
+                  </div>
+                </div>
+                <div class="cal-dp" id="calDetail">
+                  <div class="cal-emp"><span style="font-size:28px">📅</span><span>Seleccioná un día para ver sus datos</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SETTINGS -->
+            <div class="tp" id="tp-settings">
+              <div class="ph"><div class="pt">Configuración</div></div>
+              <div class="pb">
+                <div class="ss">
+                  <div class="ss-t">Apariencia</div>
+                  <div class="sr"><span class="sr-l">Tema de la interfaz</span><button class="tog" id="darkToggle" onclick="toggleDark()"></button></div>
+                </div>
+                <div class="ss">
+                  <div class="ss-t">Idioma</div>
+                  <div class="sr"><span class="sr-l">Idioma de la app</span>
+                    <select class="lsel" onchange="demoLangChange(this.value)">
+                      <option>🇦🇷 Español</option><option>🇺🇸 English</option><option>🇧🇷 Português</option>
+                      <option>🇫🇷 Français</option><option>🇩🇪 Deutsch</option><option>🇮🇹 Italiano</option>
+                      <option>🇨🇳 中文</option><option>🇯🇵 日本語</option><option>🇸🇦 العربية</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="ss">
+                  <div class="ss-t">Privacidad</div>
+                  <div class="sr"><span class="sr-l">Datos de uso anónimos</span><button class="tog on"></button></div>
+                </div>
+                <div class="ss">
+                  <div class="ss-t">Datos</div>
+                  <div class="sr"><span class="sr-l">Exportar ventas de hoy</span><button style="font-size:11px;padding:5px 12px;border:1.5px solid var(--gr200);border-radius:6px;background:var(--gr50);color:var(--gr700);cursor:pointer">⬇ CSV</button></div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /app-main -->
+        </div><!-- /app-body -->
+      </div><!-- /app-window -->
+      <p style="text-align:center;margin-top:12px;font-size:12px;color:var(--gr400)">
+        🎮 <strong style="color:#6b7280">Pestaña demo interactiva</strong> — muestra cómo funciona la app · Los datos son simulados
+      </p>
+    </div><!-- /demo-wrapper -->
   </div>
 </section>
 
@@ -558,44 +550,16 @@
 <section class="features" id="features">
   <div class="section-tag">Funciones</div>
   <h2 class="section-title">Todo lo que necesita tu negocio</h2>
-  <p class="section-sub">Diseñado para ser simple de usar desde el primer día, sin capacitación ni configuración compleja.</p>
-
-  <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-icon">🛒</div>
-      <div class="feature-title">Ventas rápidas</div>
-      <p class="feature-desc">Seleccioná productos con un click, ajustá cantidades y confirmá la venta en segundos. Buscador integrado para encontrar cualquier producto al instante.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">📦</div>
-      <div class="feature-title">Gestión de productos</div>
-      <p class="feature-desc">Agregá, editá y eliminá productos fácilmente. Soporte de precios en formato colombiano (ej: 22.000 o 22,50) sin errores de redondeo.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">📌</div>
-      <div class="feature-title">Tablero de pedidos</div>
-      <p class="feature-desc">Cada venta genera un papelito en el tablero. Marcalos como hechos cuando estén listos. Ideal para cocinas, bares y locales con pedidos simultáneos.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">📋</div>
-      <div class="feature-title">Historial de ventas</div>
-      <p class="feature-desc">Revisá todas las ventas del día con su detalle completo. Eliminá registros erróneos con confirmación para evitar borrados accidentales.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">💾</div>
-      <div class="feature-title">Sin internet</div>
-      <p class="feature-desc">Toda la información se guarda localmente en tu computadora. Funciona aunque no tengas conexión a internet. Tus datos son tuyos.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">⚡</div>
-      <div class="feature-title">Súper liviano</div>
-      <p class="feature-desc">Instalación de menos de 100MB. Arranca en segundos. Compatible con Windows 10 y Windows 11 sin requisitos especiales de hardware.</p>
-    </div>
-    <div class="feature-card" style="border-color: #4ade80; background: linear-gradient(135deg,#f0fdf4,#fff);">
-      <div class="feature-icon">✨</div>
-      <div class="feature-title">Análisis IA <span style="background:#16a34a;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;vertical-align:middle;margin-left:4px;">NUEVO</span></div>
-      <p class="feature-desc">Gráficas de ventas por hora y por día, ranking de productos más vendidos, y un asistente IA que conoce tu negocio y te da recomendaciones personalizadas.</p>
-    </div>
+  <p class="section-sub">Diseñado para ser simple desde el primer día. Sin capacitación ni configuración compleja.</p>
+  <div class="feat-grid">
+    <div class="feat"><div class="feat-icon">🛒</div><div class="feat-title">Ventas rápidas</div><p class="feat-desc">Seleccioná productos con un click, ajustá cantidades y confirmá la venta en segundos. Buscador integrado para encontrar cualquier producto al instante.</p></div>
+    <div class="feat"><div class="feat-icon">📦</div><div class="feat-title">Gestión de productos</div><p class="feat-desc">Agregá, editá y eliminá productos fácilmente. Soporte de precios en formato colombiano sin errores de redondeo.</p></div>
+    <div class="feat"><div class="feat-icon">📌</div><div class="feat-title">Tablero de pedidos</div><p class="feat-desc">Cada venta genera un papelito en el tablero. Marcalos como listos cuando estén hechos. Ideal para cocinas, bares y locales con pedidos simultáneos.</p></div>
+    <div class="feat"><div class="feat-icon">📋</div><div class="feat-title">Historial de ventas</div><p class="feat-desc">Revisá todas las ventas del día con su detalle completo. Exportá a CSV con un click para análisis externos.</p></div>
+    <div class="feat new"><div class="feat-icon">📅</div><div class="feat-title">Calendario <span class="badge">NUEVO</span></div><p class="feat-desc">Navegá cualquier día del año y mirá sus ventas, listado de órdenes, notas propias y análisis IA específico para ese día.</p></div>
+    <div class="feat new"><div class="feat-icon">✨</div><div class="feat-title">Análisis IA <span class="badge">NUEVO</span></div><p class="feat-desc">Gráficas de ventas por hora y por día, ranking de productos y un asistente IA con contexto de tu negocio para darte recomendaciones personalizadas.</p></div>
+    <div class="feat"><div class="feat-icon">💾</div><div class="feat-title">Sin internet</div><p class="feat-desc">Toda la información se guarda localmente. Funciona sin conexión. Tus datos son tuyos.</p></div>
+    <div class="feat"><div class="feat-icon">🌍</div><div class="feat-title">Multi-idioma</div><p class="feat-desc">Disponible en más de 20 idiomas: Español, Inglés, Portugués, Francés, Alemán, Chino, Japonés, Árabe y mucho más.</p></div>
   </div>
 </section>
 
@@ -603,55 +567,310 @@
 <section class="how" id="how">
   <div class="section-tag">Cómo funciona</div>
   <h2 class="section-title">Del pedido al cobro en 4 pasos</h2>
-  <p class="section-sub" style="margin-bottom:52px">Así de simple es trabajar con Your Business todos los días.</p>
-
+  <p class="section-sub" style="margin-bottom:48px">Así de simple es trabajar con Your Business todos los días.</p>
   <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-title">Cargá tus productos</div>
-      <p class="step-desc">La primera vez, ingresá todos los productos de tu negocio con nombre y precio.</p>
-    </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-title">Armá la orden</div>
-      <p class="step-desc">Elegí los productos del catálogo o buscalos por nombre. Se van sumando al carrito automáticamente.</p>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-title">Confirmá la venta</div>
-      <p class="step-desc">Presioná "Confirmar venta" y listo. Se registra en el historial y aparece un papelito en el tablero.</p>
-    </div>
-    <div class="step">
-      <div class="step-num">4</div>
-      <div class="step-title">Gestioná los pedidos</div>
-      <p class="step-desc">En el Tablero podés ver qué pedidos están pendientes y marcarlos como hechos cuando los terminás.</p>
-    </div>
+    <div class="step"><div class="step-n">1</div><div class="step-t">Cargá tus productos</div><p class="step-d">La primera vez, ingresá todos los productos de tu negocio con nombre y precio.</p></div>
+    <div class="step"><div class="step-n">2</div><div class="step-t">Armá la orden</div><p class="step-d">Elegí los productos del catálogo o buscalos por nombre. Se suman al carrito automáticamente.</p></div>
+    <div class="step"><div class="step-n">3</div><div class="step-t">Confirmá la venta</div><p class="step-d">Presioná "Confirmar venta". Se registra en el historial y aparece en el tablero.</p></div>
+    <div class="step"><div class="step-n">4</div><div class="step-t">Analizá resultados</div><p class="step-d">Revisá el Análisis IA para ver qué vendés, cuándo y qué mejorar. También en el Calendario.</p></div>
   </div>
 </section>
 
 <!-- DOWNLOAD -->
-<section class="download" id="download">
-  <img src="logo-icon.png" alt="Your Business" class="download-logo" />
+<section class="dl" id="download">
+  <img src="logo-icon.png" alt="Your Business" class="dl-logo">
   <h2>Descargá Your Business gratis</h2>
   <p>Sin costo, sin suscripción. Creá tu cuenta y empezá a usarlo en minutos.</p>
-
-  <a href="https://github.com/SMH295/your-business/releases/download/v1.1.0/Your-Business-Setup-1.1.0.exe" class="btn btn-primary" style="font-size:16px;padding:16px 36px">
-    ⬇ Descargar para Windows
+  <a href="https://github.com/SMH295/your-business/releases/download/v1.2.1/Your-Business-Setup-1.2.1.exe" class="btn btn-primary" style="font-size:16px;padding:16px 36px">
+    ⬇ Descargar para Windows — v1.2.1
   </a>
-
-  <div class="sys-reqs">
-    <div class="req"><div class="req-dot"></div> Windows 10 / 11</div>
-    <div class="req"><div class="req-dot"></div> 64-bit</div>
-    <div class="req"><div class="req-dot"></div> ~80 MB de espacio</div>
-    <div class="req"><div class="req-dot"></div> Sin internet requerido</div>
+  <div class="reqs">
+    <div class="req"><div class="req-dot"></div>Windows 10 / 11</div>
+    <div class="req"><div class="req-dot"></div>64-bit</div>
+    <div class="req"><div class="req-dot"></div>~85 MB</div>
+    <div class="req"><div class="req-dot"></div>Sin internet requerido</div>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
   <p><strong>Your Business</strong> · Sistema POS para tu negocio</p>
-  <p style="margin-top:6px">Versión 1.0.1 · Gratis para siempre</p>
+  <p style="margin-top:6px">Versión 1.2.1 · Gratis para siempre</p>
 </footer>
 
+<script>
+const PRODUCTS = [
+  {id:1,name:'Hamburguesa clásica',price:3500},
+  {id:2,name:'Papas fritas',price:1800},
+  {id:3,name:'Bebida 500ml',price:900},
+  {id:4,name:'Combo familiar',price:8200},
+  {id:5,name:'Milanesa napol.',price:4100},
+  {id:6,name:'Choripán',price:2300},
+]
+const fmt = n => '$' + Number(n).toLocaleString('es-CO')
+
+let cart = []
+let orders = [
+  {id:1,num:1,items:'Hamburguesa clásica ×1, Bebida 500ml ×1',total:4400},
+  {id:2,num:2,items:'Combo familiar ×1',total:8200},
+  {id:3,num:3,items:'Choripán ×1, Papas fritas ×1',total:4100},
+]
+let nextNum = 4
+let boardOrders = [
+  {id:1,num:2,items:'Combo familiar ×1',done:false},
+  {id:2,num:3,items:'Choripán ×1, Papas fritas ×1',done:false},
+]
+let dark = false
+let calYear = new Date().getFullYear()
+let calMonth = new Date().getMonth()
+let calSel = null
+let calNotes = {}
+const SALES_DAYS = {
+  [todayStr(-3)]: {total:32000,count:8,orders:[{num:1,items:'Combo familiar ×2',total:16400},{num:2,items:'Hamburguesa ×3',total:10500}]},
+  [todayStr(-1)]: {total:47500,count:12,orders:[{num:1,items:'Hamburguesa ×4, Bebida ×3',total:16700},{num:2,items:'Combo familiar ×1, Papas ×2',total:11800}]},
+  [todayStr(0)]:  null,
+}
+
+function todayStr(offset=0) {
+  const d = new Date(); d.setDate(d.getDate()+offset)
+  return d.toISOString().slice(0,10)
+}
+
+// ── TAB SWITCHING ──
+function switchTab(tab) {
+  document.querySelectorAll('.tp').forEach(p => p.classList.remove('on'))
+  document.querySelectorAll('.ni').forEach(b => b.classList.remove('on'))
+  document.getElementById('tp-'+tab).classList.add('on')
+  document.querySelectorAll('.ni').forEach(b => {
+    if(b.getAttribute('onclick') === `switchTab('${tab}')`) b.classList.add('on')
+  })
+  if(tab==='history') renderHistory()
+  if(tab==='board') renderBoard()
+  if(tab==='calendar') renderCalendar()
+  if(tab==='products') renderProductTable()
+  if(tab==='ai') updateAI()
+}
+
+// ── PRODUCTS ──
+function renderProductGrid() {
+  const g = document.getElementById('productGrid')
+  g.innerHTML = PRODUCTS.map(p => {
+    const inCart = cart.find(c=>c.id===p.id)
+    return `<div class="pc${inCart?' sel':''}" onclick="addToCart(${p.id})">
+      <div class="pn">${p.name}</div>
+      <div class="pp">${fmt(p.price)}</div>
+    </div>`
+  }).join('')
+}
+renderProductGrid()
+
+function renderProductTable() {
+  document.getElementById('productTable').innerHTML = PRODUCTS.map(p=>`
+    <div style="display:grid;grid-template-columns:1fr auto auto;border-bottom:1px solid var(--gr100);align-items:center">
+      <div style="padding:7px 12px;font-size:11.5px;color:var(--gr800);font-weight:500">${p.name}</div>
+      <div style="padding:7px 12px;font-size:11.5px;font-weight:700;color:var(--g600)">${fmt(p.price)}</div>
+      <div style="padding:7px 12px;display:flex;gap:5px">
+        <button style="font-size:10px;padding:3px 8px;border:1px solid var(--gr200);border-radius:5px;background:var(--gr50);cursor:pointer;color:var(--gr600)">Editar</button>
+      </div>
+    </div>`).join('')
+}
+
+// ── CART ──
+function addToCart(id) {
+  const p = PRODUCTS.find(x=>x.id===id)
+  const ex = cart.find(x=>x.id===id)
+  if(ex) ex.qty++
+  else cart.push({...p,qty:1})
+  renderCart()
+  renderProductGrid()
+}
+function changeQty(id,delta) {
+  const idx = cart.findIndex(x=>x.id===id)
+  if(idx<0) return
+  cart[idx].qty += delta
+  if(cart[idx].qty<=0) cart.splice(idx,1)
+  renderCart()
+  renderProductGrid()
+}
+function renderCart() {
+  const list = document.getElementById('cartItems')
+  const btn = document.getElementById('checkoutBtn')
+  const badge = document.getElementById('okBadge')
+  badge.classList.remove('show')
+  if(!cart.length) { list.innerHTML='<div class="ce">Seleccioná productos</div>'; btn.disabled=true; document.getElementById('cartTotal').textContent='$0'; return }
+  list.innerHTML = cart.map(c=>`
+    <div class="ci">
+      <span class="ci-name">${c.name}</span>
+      <div class="ci-ctrl">
+        <button class="qb" onclick="changeQty(${c.id},-1)">−</button>
+        <span class="cq">${c.qty}</span>
+        <button class="qb" onclick="changeQty(${c.id},1)">+</button>
+      </div>
+    </div>`).join('')
+  const total = cart.reduce((s,c)=>s+c.price*c.qty,0)
+  document.getElementById('cartTotal').textContent = fmt(total)
+  btn.disabled = false
+}
+function checkout() {
+  if(!cart.length) return
+  const total = cart.reduce((s,c)=>s+c.price*c.qty,0)
+  const items = cart.map(c=>`${c.name} ×${c.qty}`).join(', ')
+  const order = {id:Date.now(),num:nextNum++,items,total}
+  orders.push(order)
+  boardOrders.push({id:Date.now(),num:order.num,items,done:false})
+  const badge = document.getElementById('okBadge')
+  document.getElementById('okNum').textContent = order.num
+  badge.classList.add('show')
+  cart=[]
+  renderCart()
+  renderProductGrid()
+  updateAI()
+}
+
+// ── HISTORY ──
+function renderHistory() {
+  const tbody = document.getElementById('histBody')
+  const total = orders.reduce((s,o)=>s+o.total,0)
+  document.getElementById('histTotal').textContent = fmt(total)
+  document.getElementById('histCount').textContent = orders.length
+  tbody.innerHTML = orders.map(o=>`<tr>
+    <td class="ot-num">#${o.num}</td>
+    <td style="font-size:10.5px;color:var(--gr500);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.items}</td>
+    <td class="ot-tot">${fmt(o.total)}</td>
+  </tr>`).join('')
+}
+
+// ── BOARD ──
+function renderBoard() {
+  const bc = document.getElementById('boardCards')
+  if(!boardOrders.length){bc.innerHTML='<div class="board-empty" style="padding:40px;text-align:center;color:var(--gr400);font-size:12px;width:100%">Sin pedidos pendientes</div>';return}
+  bc.innerHTML = boardOrders.map(b=>`
+    <div class="bcard${b.done?' done':''}">
+      <div class="bcard-num">Orden #${b.num}</div>
+      <div class="bcard-items">${b.items}</div>
+      <button class="bdone" onclick="markDone(${b.id})" ${b.done?'disabled':''}>
+        ${b.done?'✓ Listo':'Marcar como listo'}
+      </button>
+    </div>`).join('')
+}
+function markDone(id) {
+  const o = boardOrders.find(b=>b.id===id)
+  if(o) { o.done=true; renderBoard() }
+}
+
+// ── AI ──
+function updateAI() {
+  const total = orders.reduce((s,o)=>s+o.total,0)
+  document.getElementById('aiTotalHoy').textContent = fmt(total)
+  document.getElementById('aiCount').textContent = orders.length
+}
+
+// ── CALENDAR ──
+const MONTHS_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+const DAYS_ES = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb']
+
+function renderCalendar() {
+  const now = new Date()
+  document.getElementById('calMonthLabel').textContent = `${MONTHS_ES[calMonth]} ${calYear}`
+  document.getElementById('calSumLabel').textContent = `${MONTHS_ES[calMonth]} ${calYear}`
+
+  const dh = document.getElementById('calDayNames')
+  dh.innerHTML = DAYS_ES.map(d=>`<div class="cal-dn">${d}</div>`).join('')
+
+  const firstDay = new Date(calYear,calMonth,1).getDay()
+  const daysInMonth = new Date(calYear,calMonth+1,0).getDate()
+  const todayFull = now.toISOString().slice(0,10)
+
+  let monthTotal=0, monthOrders=0, monthDays=0
+  const cells = []
+  for(let i=0;i<firstDay;i++) cells.push('<div></div>')
+  for(let d=1;d<=daysInMonth;d++) {
+    const ds = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`
+    const data = SALES_DAYS[ds] || (ds===todayStr(0) && orders.length ? {total:orders.reduce((s,o)=>s+o.total,0),count:orders.length,orders} : null)
+    if(data) { monthTotal+=data.total; monthOrders+=data.count; monthDays++ }
+    const isToday = ds===todayFull
+    const isSel = ds===calSel
+    const hasDot = !!data
+    cells.push(`<button class="cd${isToday?' today':''}${isSel?' sel':''}" onclick="calSelect('${ds}')">
+      ${d}${hasDot?`<span class="cd-dot"></span>`:''}
+    </button>`)
+  }
+  document.getElementById('calDays').innerHTML = cells.join('')
+  document.getElementById('calSumTotal').textContent = fmt(monthTotal)
+  document.getElementById('calSumOrders').textContent = monthOrders
+  document.getElementById('calSumDays').textContent = monthDays
+
+  if(calSel) renderCalDetail()
+}
+
+function calSelect(ds) {
+  calSel = ds
+  renderCalendar()
+  renderCalDetail()
+}
+
+function renderCalDetail() {
+  const dp = document.getElementById('calDetail')
+  const todayFull = new Date().toISOString().slice(0,10)
+  const data = SALES_DAYS[calSel] || (calSel===todayStr(0) && orders.length ? {total:orders.reduce((s,o)=>s+o.total,0),count:orders.length,orders:orders.map(o=>({num:o.num,items:o.items,total:o.total}))} : null)
+  const dateLabel = new Date(calSel+'T12:00:00').toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long',year:'numeric'})
+  const isToday = calSel===todayFull
+
+  dp.innerHTML = `
+    <div class="cal-dh2">${dateLabel}${isToday?' <span style="font-size:10px;background:var(--g50);color:var(--g600);padding:2px 8px;border-radius:999px;font-weight:600">Hoy</span>':''}</div>
+    <div class="cal-ds">
+      <div class="cal-sb"><div class="cal-slbl">Total vendido</div><div class="cal-sval">${data?fmt(data.total):'$0'}</div></div>
+      <div class="cal-sb"><div class="cal-slbl">Órdenes</div><div class="cal-sval dk">${data?data.count:0}</div></div>
+    </div>
+    <div class="cal-ob">
+      <div class="cal-ot">Órdenes del día</div>
+      ${data&&data.orders.length ? data.orders.map(o=>`
+        <div class="cal-or">
+          <span style="font-weight:600">#${o.num}</span>
+          <span style="color:var(--gr500);font-size:10px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.items}</span>
+          <span style="font-weight:700;color:var(--g600)">${fmt(o.total)}</span>
+        </div>`).join('') : '<div style="padding:12px;text-align:center;font-size:11px;color:var(--gr400)">Sin ventas este día</div>'}
+    </div>
+    <div class="cal-nb">
+      <div class="cal-nt">Notas</div>
+      <textarea class="cal-ni" rows="3" placeholder="Anotá algo sobre este día..." oninput="calNotes['${calSel}']=this.value">${calNotes[calSel]||''}</textarea>
+    </div>`
+}
+
+function calPrev() {
+  if(calMonth===0){calMonth=11;calYear--} else calMonth--
+  calSel=null; renderCalendar()
+  document.getElementById('calDetail').innerHTML='<div class="cal-emp"><span style="font-size:28px">📅</span><span>Seleccioná un día</span></div>'
+}
+function calNext() {
+  if(calMonth===11){calMonth=0;calYear++} else calMonth++
+  calSel=null; renderCalendar()
+  document.getElementById('calDetail').innerHTML='<div class="cal-emp"><span style="font-size:28px">📅</span><span>Seleccioná un día</span></div>'
+}
+
+// ── DARK MODE ──
+function toggleDark() {
+  dark=!dark
+  document.getElementById('appWindow').classList.toggle('dark',dark)
+  document.getElementById('darkToggle').classList.toggle('on',dark)
+}
+
+// ── LANG CHANGE (demo only) ──
+function demoLangChange(val) {
+  const labels = {
+    '🇦🇷 Español':['🛒 Ventas','📦 Productos','📋 Historial','📌 Tablero','✨ Análisis IA','📅 Calendario','⚙️ Configuración'],
+    '🇺🇸 English':['🛒 Sales','📦 Products','📋 History','📌 Board','✨ AI Analysis','📅 Calendar','⚙️ Settings'],
+    '🇧🇷 Português':['🛒 Vendas','📦 Produtos','📋 Histórico','📌 Quadro','✨ Análise IA','📅 Calendário','⚙️ Configurações'],
+    '🇫🇷 Français':['🛒 Ventes','📦 Produits','📋 Historique','📌 Tableau','✨ Analyse IA','📅 Calendrier','⚙️ Paramètres'],
+    '🇩🇪 Deutsch':['🛒 Verkauf','📦 Produkte','📋 Verlauf','📌 Tafel','✨ KI-Analyse','📅 Kalender','⚙️ Einstellungen'],
+    '🇮🇹 Italiano':['🛒 Vendite','📦 Prodotti','📋 Cronologia','📌 Bacheca','✨ Analisi IA','📅 Calendario','⚙️ Impostazioni'],
+    '🇨🇳 中文':['🛒 销售','📦 产品','📋 历史','📌 看板','✨ AI分析','📅 日历','⚙️ 设置'],
+    '🇯🇵 日本語':['🛒 販売','📦 製品','📋 履歴','📌 ボード','✨ AI分析','📅 カレンダー','⚙️ 設定'],
+    '🇸🇦 العربية':['🛒 مبيعات','📦 منتجات','📋 السجل','📌 اللوحة','✨ تحليل ذكاء','📅 التقويم','⚙️ الإعدادات'],
+  }
+  const tabs = labels[val]
+  if(!tabs) return
+  document.querySelectorAll('.ni').forEach((btn,i)=>{ if(tabs[i]) btn.textContent=tabs[i] })
+}
+</script>
 </body>
 </html>

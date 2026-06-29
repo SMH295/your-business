@@ -11,18 +11,19 @@ import Board from './components/Board'
 import Settings from './components/Settings'
 import AIAnalysis from './components/AIAnalysis'
 import Calendar from './components/Calendar'
+import { LanguageProvider, useT } from './LanguageContext'
 
 function ConsentBanner({ onAccept, onReject }) {
+  const { t } = useT()
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t-2 border-gray-200 dark:border-gray-600 shadow-xl">
       <div className="px-6 py-4 flex items-start gap-4">
         <div className="flex-1">
           <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-            Ayudanos a mejorar Your Business
+            {t('consent.title')}
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-            Recopilamos datos anónimos de uso (qué funciones se usan y con qué frecuencia) para mejorar la app.
-            Nunca enviamos tu nombre, productos ni montos. Podés desactivarlo en Configuración en cualquier momento.
+            {t('consent.desc')}
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0 mt-0.5">
@@ -30,13 +31,13 @@ function ConsentBanner({ onAccept, onReject }) {
             onClick={onReject}
             className="px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
           >
-            No, gracias
+            {t('consent.reject')}
           </button>
           <button
             onClick={onAccept}
             className="px-4 py-1.5 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-md transition-colors"
           >
-            Aceptar
+            {t('consent.accept')}
           </button>
         </div>
       </div>
@@ -44,17 +45,18 @@ function ConsentBanner({ onAccept, onReject }) {
   )
 }
 
-const NAV = [
-  { id: 'sales',      label: 'Ventas',         icon: '🛒' },
-  { id: 'products',   label: 'Productos',       icon: '📦' },
-  { id: 'history',    label: 'Historial',       icon: '📋' },
-  { id: 'board',      label: 'Tablero',         icon: '📌' },
-  { id: 'ai',         label: 'Análisis IA',     icon: '✨' },
-  { id: 'calendar',   label: 'Calendario',      icon: '📅' },
-  { id: 'settings',   label: 'Configuración',   icon: '⚙️' },
+const NAV_IDS = [
+  { id: 'sales',    key: 'nav.sales',    icon: '🛒' },
+  { id: 'products', key: 'nav.products', icon: '📦' },
+  { id: 'history',  key: 'nav.history',  icon: '📋' },
+  { id: 'board',    key: 'nav.board',    icon: '📌' },
+  { id: 'ai',       key: 'nav.ai',       icon: '✨' },
+  { id: 'calendar', key: 'nav.calendar', icon: '📅' },
+  { id: 'settings', key: 'nav.settings', icon: '⚙️' },
 ]
 
-export default function App() {
+function AppInner() {
+  const { t } = useT()
   const [authUser,    setAuthUser]    = useState(null)
   const [authLoading, setAuthLoading] = useState(true)
   const [deviceError, setDeviceError] = useState('')
@@ -142,11 +144,11 @@ export default function App() {
       {/* Sidebar */}
       <aside className="w-52 flex-shrink-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
         <div className="px-5 py-5 border-b border-gray-100 dark:border-gray-700">
-          <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">Tu negocio</p>
+          <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">{t('app.yourbiz')}</p>
           <p className="text-sm font-semibold text-gray-900 dark:text-white mt-0.5 truncate">{negocio?.nombre}</p>
         </div>
         <nav className="flex-1 p-3 space-y-1">
-          {NAV.map((item) => (
+          {NAV_IDS.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
@@ -157,7 +159,7 @@ export default function App() {
               }`}
             >
               <span>{item.icon}</span>
-              {item.label}
+              {t(item.key)}
             </button>
           ))}
         </nav>
@@ -166,9 +168,9 @@ export default function App() {
             onClick={() => signOut(auth)}
             className="w-full text-xs text-gray-400 hover:text-red-500 transition-colors text-center py-1"
           >
-            Cerrar sesión
+            {t('app.logout')}
           </button>
-          <p className="text-xs text-gray-400 text-center">Your Business v1.2.0</p>
+          <p className="text-xs text-gray-400 text-center">{t('app.version')}</p>
         </div>
       </aside>
 
@@ -197,5 +199,13 @@ export default function App() {
         />
       )}
     </div>
+  )
+}
+
+export default function App() {
+  return (
+    <LanguageProvider>
+      <AppInner />
+    </LanguageProvider>
   )
 }

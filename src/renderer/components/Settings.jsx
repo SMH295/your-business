@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { auth } from '../firebase'
 import { updatePassword, updateEmail, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth'
 import Toast from './ui/Toast'
+import { useT, LANGUAGES } from '../LanguageContext'
 
 function Section({ title, children }) {
   return (
@@ -45,7 +46,7 @@ function InputRow({ label, type = 'text', value, onChange, placeholder }) {
   )
 }
 
-function TelemetryToggle({ showToast }) {
+function TelemetryToggle({ showToast, t }) {
   const [consent, setConsent] = useState(undefined)
 
   useEffect(() => {
@@ -56,7 +57,7 @@ function TelemetryToggle({ showToast }) {
     const newVal = !consent
     await window.api.telemetry.setConsent(newVal)
     setConsent(newVal)
-    showToast(newVal ? 'Telemetría activada' : 'Telemetría desactivada')
+    showToast(newVal ? t('settings.telOn') : t('settings.telOff'))
   }
 
   if (consent === undefined) return null
@@ -64,7 +65,7 @@ function TelemetryToggle({ showToast }) {
   return (
     <div className="flex items-center gap-3">
       <span className="text-sm text-gray-500 dark:text-gray-400">
-        {consent ? 'Activada' : 'Desactivada'}
+        {consent ? t('settings.telOn') : t('settings.telOff')}
       </span>
       <button
         onClick={toggle}
@@ -108,6 +109,7 @@ function ApiKeyField({ showToast }) {
 }
 
 export default function Settings({ negocio, onNegocioUpdate, darkMode, onToggleDark }) {
+  const { t, lang, changeLang } = useT()
   const [toast, setToast] = useState(null)
 
   // Negocio name
@@ -218,17 +220,17 @@ export default function Settings({ negocio, onNegocioUpdate, darkMode, onToggleD
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-        <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Configuración</h1>
+        <h1 className="text-xl font-semibold text-gray-900 dark:text-white">{t('settings.title')}</h1>
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-5">
 
         {/* Apariencia */}
-        <Section title="Apariencia">
-          <Field label="Tema de la interfaz">
+        <Section title={t('settings.appearance')}>
+          <Field label={t('settings.theme')}>
             <div className="flex items-center gap-3">
               <span className="text-sm text-gray-500 dark:text-gray-400">
-                {darkMode ? '🌙 Oscuro' : '☀️ Claro'}
+                {darkMode ? t('settings.dark') : t('settings.light')}
               </span>
               <button
                 onClick={onToggleDark}
@@ -240,68 +242,79 @@ export default function Settings({ negocio, onNegocioUpdate, darkMode, onToggleD
           </Field>
         </Section>
 
+        {/* Idioma */}
+        <Section title={t('settings.language')}>
+          <Field label={t('settings.language_label')}>
+            <select
+              value={lang}
+              onChange={e => changeLang(e.target.value)}
+              className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              {Object.entries(LANGUAGES).map(([code, { name, flag }]) => (
+                <option key={code} value={code}>{flag} {name}</option>
+              ))}
+            </select>
+          </Field>
+        </Section>
+
         {/* Negocio */}
-        <Section title="Mi negocio">
-          <InputRow label="Nombre del negocio" value={nombre} onChange={setNombre} placeholder="Nombre de tu negocio" />
+        <Section title={t('settings.business')}>
+          <InputRow label={t('settings.businessName')} value={nombre} onChange={setNombre} placeholder={t('settings.businessName')} />
           <div className="pt-3 flex justify-end">
             <button onClick={handleSaveNombre} disabled={savingNombre || nombre.trim() === negocio?.nombre} className={btnSave}>
-              {savingNombre ? 'Guardando...' : 'Guardar nombre'}
+              {savingNombre ? t('settings.saving') : t('settings.saveName')}
             </button>
           </div>
         </Section>
 
         {/* Cuenta - Contraseña */}
-        <Section title="Cambiar contraseña">
-          <InputRow label="Contraseña actual"  type="password" value={currentPass}  onChange={setCurrentPass}  placeholder="Tu contraseña actual" />
-          <InputRow label="Nueva contraseña"   type="password" value={newPass}       onChange={setNewPass}       placeholder="Mínimo 6 caracteres" />
-          <InputRow label="Confirmar nueva"    type="password" value={confirmPass}   onChange={setConfirmPass}   placeholder="Repetí la nueva contraseña" />
+        <Section title={t('settings.changePass')}>
+          <InputRow label={t('settings.currentPass')}  type="password" value={currentPass}  onChange={setCurrentPass}  placeholder={t('settings.currentPass')} />
+          <InputRow label={t('settings.newPass')}       type="password" value={newPass}       onChange={setNewPass}       placeholder={t('settings.newPass')} />
+          <InputRow label={t('settings.confirmPass')}   type="password" value={confirmPass}   onChange={setConfirmPass}   placeholder={t('settings.confirmPass')} />
           <div className="pt-3 flex justify-end">
             <button onClick={handleChangePassword} disabled={savingPass} className={btnSave}>
-              {savingPass ? 'Guardando...' : 'Cambiar contraseña'}
+              {savingPass ? t('settings.saving') : t('settings.changePassBtn')}
             </button>
           </div>
         </Section>
 
         {/* Cuenta - Email */}
-        <Section title="Cambiar correo electrónico">
-          <Field label="Correo actual">
+        <Section title={t('settings.changeEmail')}>
+          <Field label={t('settings.currentEmail')}>
             <span className="text-sm text-gray-500 dark:text-gray-400">{auth.currentUser?.email}</span>
           </Field>
-          <InputRow label="Nuevo correo"      type="email"    value={newEmail}  onChange={setNewEmail}  placeholder="nuevo@correo.com" />
-          <InputRow label="Contraseña actual" type="password" value={emailPass} onChange={setEmailPass} placeholder="Para confirmar el cambio" />
+          <InputRow label={t('settings.newEmail')}      type="email"    value={newEmail}  onChange={setNewEmail}  placeholder="nuevo@correo.com" />
+          <InputRow label={t('settings.currentPass')}   type="password" value={emailPass} onChange={setEmailPass} placeholder={t('settings.currentPass')} />
           <div className="pt-3 flex justify-end">
             <button onClick={handleChangeEmail} disabled={savingEmail} className={btnSave}>
-              {savingEmail ? 'Guardando...' : 'Cambiar correo'}
+              {savingEmail ? t('settings.saving') : t('settings.changeEmailBtn')}
             </button>
           </div>
         </Section>
 
         {/* API Key IA */}
-        <Section title="Análisis IA — API Key">
-          <Field label="Claude API Key">
+        <Section title={t('settings.aiApi')}>
+          <Field label="Gemini API Key">
             <ApiKeyField showToast={showToast} />
           </Field>
           <p className="text-xs text-gray-400 mt-2">
-            Gratis en <strong>aistudio.google.com</strong> → Get API key → Create API key → elegí <strong>"Default Gemini Project"</strong> (no uses otro proyecto)
+            Gratis en <strong>aistudio.google.com</strong> → Get API key → Create API key → elegí <strong>"Default Gemini Project"</strong>
           </p>
         </Section>
 
         {/* Privacidad */}
-        <Section title="Privacidad">
-          <Field label="Datos de uso anónimos">
-            <TelemetryToggle showToast={showToast} />
+        <Section title={t('settings.privacy')}>
+          <Field label={t('settings.telemetry')}>
+            <TelemetryToggle showToast={showToast} t={t} />
           </Field>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-            Enviamos datos anónimos (funciones usadas, frecuencia de uso) para mejorar la app.
-            Nunca se envían nombres, productos ni montos.
-          </p>
         </Section>
 
         {/* Exportar */}
-        <Section title="Datos">
-          <Field label="Exportar ventas de hoy">
+        <Section title={t('settings.data')}>
+          <Field label={t('settings.exportToday')}>
             <button onClick={handleExportCSV} className={btnSecondary}>
-              ⬇ Descargar CSV
+              {t('settings.downloadCsv')}
             </button>
           </Field>
         </Section>
