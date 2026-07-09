@@ -315,6 +315,7 @@
       <li><a href="#demo">Demo</a></li>
       <li><a href="#features">Funciones</a></li>
       <li><a href="#how">Cómo funciona</a></li>
+      <li><a href="#pricing">Precios</a></li>
       <li><a href="#download" class="btn-nav">Descargar gratis</a></li>
     </ul>
   </div>
@@ -323,7 +324,7 @@
 <section class="hero" id="demo">
   <div class="hero-inner">
     <div>
-      <div class="hero-badge">⚡ v1.2.1 — Multi-idioma + Calendario + IA</div>
+      <div class="hero-badge">⚡ v1.3.0 — Multi-idioma + Calendario + IA</div>
       <h1>El sistema POS que<br><span>tu negocio necesitaba</span></h1>
       <p class="hero-desc">Registrá ventas, gestioná productos, controlá pedidos y analizá tus resultados con inteligencia artificial. Simple, rápido y completamente gratis.</p>
       <div class="hero-actions">
@@ -358,7 +359,7 @@
               <button class="ni" onclick="switchTab('calendar')">📅 Calendario</button>
               <button class="ni" onclick="switchTab('settings')">⚙️ Configuración</button>
             </nav>
-            <div class="sb-foot"><div class="sb-ver">Your Business v1.2.1</div></div>
+            <div class="sb-foot"><div class="sb-ver">Your Business v1.3.0</div></div>
           </aside>
 
           <!-- MAIN -->
@@ -576,13 +577,125 @@
   </div>
 </section>
 
+<!-- PRICING -->
+<section id="pricing" style="padding:88px 24px;background:var(--gr50)">
+  <div style="max-width:960px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:12px">
+      <span style="display:inline-block;background:var(--g100);color:var(--g800);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 14px;border-radius:999px">Precios</span>
+    </div>
+    <h2 style="text-align:center;font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;color:var(--gr900);margin-bottom:8px">Empezá gratis, crecé cuando quieras</h2>
+    <p style="text-align:center;color:var(--gr500);margin-bottom:12px;max-width:520px;margin-left:auto;margin-right:auto">Sin tarjeta de crédito. Sin sorpresas. Actualizá solo si necesitás más.</p>
+
+    <!-- Period toggle -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:40px">
+      <span id="lbl-monthly" style="font-size:14px;font-weight:600;color:var(--gr900)">Mensual</span>
+      <button id="period-toggle" onclick="togglePeriod()" style="position:relative;width:48px;height:26px;border-radius:999px;border:none;cursor:pointer;background:var(--g600);transition:background .2s">
+        <span id="toggle-knob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s"></span>
+      </button>
+      <span id="lbl-annual" style="font-size:14px;font-weight:600;color:var(--gr400)">Anual <span style="font-size:11px;background:#fef3c7;color:#92400e;padding:2px 7px;border-radius:999px;font-weight:700">−20%</span></span>
+    </div>
+
+    <!-- Cards -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;align-items:stretch">
+
+      <!-- Gratis -->
+      <div style="background:#fff;border:2px solid var(--gr200);border-radius:20px;padding:32px 28px;display:flex;flex-direction:column;gap:20px">
+        <div>
+          <h3 style="font-size:18px;font-weight:700;color:var(--gr900);margin:0 0 8px">Gratis</h3>
+          <div style="display:flex;align-items:baseline;gap:4px">
+            <span style="font-size:32px;font-weight:800;color:var(--gr900)">$0</span>
+            <span style="font-size:14px;color:var(--gr400)">para siempre</span>
+          </div>
+        </div>
+        <ul style="list-style:none;padding:0;margin:0;flex:1;display:flex;flex-direction:column;gap:10px">
+          <li style="display:flex;align-items:center;gap:9px;font-size:14px;color:var(--gr700)"><span style="color:var(--g600);font-weight:700;font-size:15px">✓</span>Hasta 40 productos</li>
+          <li style="display:flex;align-items:center;gap:9px;font-size:14px;color:var(--gr700)"><span style="color:var(--g600);font-weight:700;font-size:15px">✓</span>Ventas ilimitadas</li>
+          <li style="display:flex;align-items:center;gap:9px;font-size:14px;color:var(--gr700)"><span style="color:var(--g600);font-weight:700;font-size:15px">✓</span>Historial del día</li>
+          <li style="display:flex;align-items:center;gap:9px;font-size:14px;color:var(--gr700)"><span style="color:var(--g600);font-weight:700;font-size:15px">✓</span>Tablero de pedidos</li>
+          <li style="display:flex;align-items:center;gap:9px;font-size:14px;color:var(--gr700)"><span style="color:var(--g600);font-weight:700;font-size:15px">✓</span>Calendario de ventas</li>
+          <li style="display:flex;align-items:center;gap:9px;font-size:14px;color:var(--gr400);text-decoration:line-through"><span style="font-size:15px">✗</span>Exportar CSV</li>
+          <li style="display:flex;align-items:center;gap:9px;font-size:14px;color:var(--gr400);text-decoration:line-through"><span style="font-size:15px">✗</span>Análisis IA</li>
+        </ul>
+        <a href="https://github.com/SMH295/your-business/releases/download/v1.3.0/Your-Business-Setup-1.3.0.exe" style="display:block;text-align:center;padding:12px;border:1.5px solid var(--gr200);border-radius:12px;font-size:14px;font-weight:600;color:var(--gr700);text-decoration:none;transition:border-color .2s" onmouseover="this.style.borderColor='var(--g400)'" onmouseout="this.style.borderColor='var(--gr200)'">Descargar gratis</a>
+      </div>
+
+      <!-- Pro -->
+      <div style="background:#fff;border:2.5px solid var(--g600);border-radius:20px;padding:32px 28px;display:flex;flex-direction:column;gap:20px;position:relative;box-shadow:0 8px 32px rgba(22,163,74,.15)">
+        <span style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--g600);color:#fff;font-size:11px;font-weight:700;padding:4px 16px;border-radius:999px;white-space:nowrap">MÁS POPULAR</span>
+        <div>
+          <h3 style="font-size:18px;font-weight:700;color:var(--gr900);margin:0 0 8px">Pro</h3>
+          <div style="display:flex;align-items:baseline;gap:4px">
+            <span id="pro-price" style="font-size:32px;font-weight:800;color:var(--gr900)">$19.900</span>
+            <span id="pro-period" style="font-size:14px;color:var(--gr400)">COP / mes</span>
+          </div>
+          <p id="pro-annual-note" style="font-size:12px;color:var(--g700);margin:4px 0 0;display:none">Facturado anual · $191.040 / año</p>
+        </div>
+        <ul style="list-style:none;padding:0;margin:0;flex:1;display:flex;flex-direction:column;gap:10px">
+          <li style="display:flex;align-items:center;gap:9px;font-size:14px;color:var(--gr700)"><span style="color:var(--g600);font-weight:700;font-size:15px">✓</span><strong>Productos ilimitados</strong></li>
+          <li style="display:flex;align-items:center;gap:9px;font-size:14px;color:var(--gr700)"><span style="color:var(--g600);font-weight:700;font-size:15px">✓</span>Ventas ilimitadas</li>
+          <li style="display:flex;align-items:center;gap:9px;font-size:14px;color:var(--gr700)"><span style="color:var(--g600);font-weight:700;font-size:15px">✓</span>Historial completo</li>
+          <li style="display:flex;align-items:center;gap:9px;font-size:14px;color:var(--gr700)"><span style="color:var(--g600);font-weight:700;font-size:15px">✓</span>Tablero de pedidos</li>
+          <li style="display:flex;align-items:center;gap:9px;font-size:14px;color:var(--gr700)"><span style="color:var(--g600);font-weight:700;font-size:15px">✓</span>Calendario de ventas</li>
+          <li style="display:flex;align-items:center;gap:9px;font-size:14px;color:var(--gr700)"><span style="color:var(--g600);font-weight:700;font-size:15px">✓</span><strong>Exportar CSV</strong></li>
+          <li style="display:flex;align-items:center;gap:9px;font-size:14px;color:var(--gr700)"><span style="color:var(--g600);font-weight:700;font-size:15px">✓</span><strong>Análisis IA</strong></li>
+        </ul>
+        <a href="https://wa.me/573000000000?text=Quiero el plan Pro de Your Business" target="_blank" style="display:block;text-align:center;padding:13px;background:var(--g600);border-radius:12px;font-size:14px;font-weight:700;color:#fff;text-decoration:none;transition:background .2s" onmouseover="this.style.background='var(--g700)'" onmouseout="this.style.background='var(--g600)'">Contratar Pro →</a>
+      </div>
+
+      <!-- Negocios -->
+      <div style="background:#fff;border:2px solid #a78bfa;border-radius:20px;padding:32px 28px;display:flex;flex-direction:column;gap:20px">
+        <div>
+          <h3 style="font-size:18px;font-weight:700;color:var(--gr900);margin:0 0 8px">Negocios</h3>
+          <div style="display:flex;align-items:baseline;gap:4px">
+            <span id="neg-price" style="font-size:32px;font-weight:800;color:var(--gr900)">$49.900</span>
+            <span id="neg-period" style="font-size:14px;color:var(--gr400)">COP / mes</span>
+          </div>
+          <p id="neg-annual-note" style="font-size:12px;color:#7c3aed;margin:4px 0 0;display:none">Facturado anual · $479.040 / año</p>
+        </div>
+        <ul style="list-style:none;padding:0;margin:0;flex:1;display:flex;flex-direction:column;gap:10px">
+          <li style="display:flex;align-items:center;gap:9px;font-size:14px;color:var(--gr700)"><span style="color:#7c3aed;font-weight:700;font-size:15px">✓</span>Todo lo de Pro</li>
+          <li style="display:flex;align-items:center;gap:9px;font-size:14px;color:var(--gr700)"><span style="color:#7c3aed;font-weight:700;font-size:15px">✓</span><strong>Informes avanzados</strong></li>
+          <li style="display:flex;align-items:center;gap:9px;font-size:14px;color:var(--gr700)"><span style="color:#7c3aed;font-weight:700;font-size:15px">✓</span>Soporte prioritario</li>
+          <li style="display:flex;align-items:center;gap:9px;font-size:14px;color:var(--gr700)"><span style="color:#7c3aed;font-weight:700;font-size:15px">✓</span>Múltiples dispositivos</li>
+        </ul>
+        <a href="https://wa.me/573000000000?text=Quiero el plan Negocios de Your Business" target="_blank" style="display:block;text-align:center;padding:13px;background:#7c3aed;border-radius:12px;font-size:14px;font-weight:700;color:#fff;text-decoration:none;transition:background .2s" onmouseover="this.style.background='#6d28d9'" onmouseout="this.style.background='#7c3aed'">Contratar Negocios →</a>
+      </div>
+
+    </div><!-- /cards -->
+
+    <!-- FAQ -->
+    <div style="margin-top:56px;max-width:680px;margin-left:auto;margin-right:auto">
+      <h3 style="text-align:center;font-size:20px;font-weight:700;color:var(--gr900);margin-bottom:28px">Preguntas frecuentes</h3>
+      <div style="display:flex;flex-direction:column;gap:0">
+        <details style="border-top:1px solid var(--gr200);padding:18px 0">
+          <summary style="font-size:15px;font-weight:600;color:var(--gr800);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center">¿Cómo activo mi plan pagado? <span>＋</span></summary>
+          <p style="font-size:14px;color:var(--gr600);margin:12px 0 0;line-height:1.7">Cuando contratás, te enviamos una clave de licencia por WhatsApp. En la app, andá a <strong>Mi Plan → Activar licencia</strong> y pegá la clave. Listo, acceso inmediato sin internet.</p>
+        </details>
+        <details style="border-top:1px solid var(--gr200);padding:18px 0">
+          <summary style="font-size:15px;font-weight:600;color:var(--gr800);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center">¿Funciona sin internet? <span>＋</span></summary>
+          <p style="font-size:14px;color:var(--gr600);margin:12px 0 0;line-height:1.7">Sí. Your Business es 100% local. No necesitás internet para vender, ver historial ni usar el Tablero. La licencia también se verifica offline.</p>
+        </details>
+        <details style="border-top:1px solid var(--gr200);padding:18px 0">
+          <summary style="font-size:15px;font-weight:600;color:var(--gr800);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center">¿Qué pasa si cancelo mi suscripción? <span>＋</span></summary>
+          <p style="font-size:14px;color:var(--gr600);margin:12px 0 0;line-height:1.7">Volvés al plan Gratis automáticamente. Tus ventas e historial están guardados. Solo perdés las funciones de pago (exportar, IA, informes).</p>
+        </details>
+        <details style="border-top:1px solid var(--gr200);border-bottom:1px solid var(--gr200);padding:18px 0">
+          <summary style="font-size:15px;font-weight:600;color:var(--gr800);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center">¿Hay período de prueba? <span>＋</span></summary>
+          <p style="font-size:14px;color:var(--gr600);margin:12px 0 0;line-height:1.7">El plan Gratis es permanente — podés usarlo para siempre sin pagar. Si querés Pro o Negocios, escribinos y te damos 7 días de prueba.</p>
+        </details>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 <!-- DOWNLOAD -->
 <section class="dl" id="download">
   <img src="logo-icon.png" alt="Your Business" class="dl-logo">
   <h2>Descargá Your Business gratis</h2>
   <p>Sin costo, sin suscripción. Creá tu cuenta y empezá a usarlo en minutos.</p>
-  <a href="https://github.com/SMH295/your-business/releases/download/v1.2.1/Your-Business-Setup-1.2.1.exe" class="btn btn-primary" style="font-size:16px;padding:16px 36px">
-    ⬇ Descargar para Windows — v1.2.1
+  <a href="https://github.com/SMH295/your-business/releases/download/v1.3.0/Your-Business-Setup-1.3.0.exe" class="btn btn-primary" style="font-size:16px;padding:16px 36px">
+    ⬇ Descargar para Windows — v1.3.0
   </a>
   <div class="reqs">
     <div class="req"><div class="req-dot"></div>Windows 10 / 11</div>
@@ -870,6 +983,30 @@ function demoLangChange(val) {
   const tabs = labels[val]
   if(!tabs) return
   document.querySelectorAll('.ni').forEach((btn,i)=>{ if(tabs[i]) btn.textContent=tabs[i] })
+}
+
+// Pricing toggle
+let _annual = false
+function togglePeriod() {
+  _annual = !_annual
+  const knob = document.getElementById('toggle-knob')
+  const lblM = document.getElementById('lbl-monthly')
+  const lblA = document.getElementById('lbl-annual')
+  if (knob) knob.style.transform = _annual ? 'translateX(22px)' : 'translateX(0)'
+  if (lblM) lblM.style.color = _annual ? 'var(--gr400)' : 'var(--gr900)'
+  if (lblA) lblA.style.color = _annual ? 'var(--gr900)' : 'var(--gr400)'
+  const proPrice  = document.getElementById('pro-price')
+  const proNote   = document.getElementById('pro-annual-note')
+  const proPeriod = document.getElementById('pro-period')
+  const negPrice  = document.getElementById('neg-price')
+  const negNote   = document.getElementById('neg-annual-note')
+  const negPeriod = document.getElementById('neg-period')
+  if (proPrice)  proPrice.textContent  = _annual ? '$15.920' : '$19.900'
+  if (proPeriod) proPeriod.textContent = _annual ? 'COP / mes' : 'COP / mes'
+  if (proNote)   proNote.style.display = _annual ? 'block' : 'none'
+  if (negPrice)  negPrice.textContent  = _annual ? '$39.920' : '$49.900'
+  if (negPeriod) negPeriod.textContent = _annual ? 'COP / mes' : 'COP / mes'
+  if (negNote)   negNote.style.display = _annual ? 'block' : 'none'
 }
 </script>
 </body>

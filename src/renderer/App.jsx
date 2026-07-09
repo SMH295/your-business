@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { auth, db } from './firebase'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
@@ -11,7 +11,9 @@ import Board from './components/Board'
 import Settings from './components/Settings'
 import AIAnalysis from './components/AIAnalysis'
 import Calendar from './components/Calendar'
+import Plan from './components/Plan'
 import { LanguageProvider, useT } from './LanguageContext'
+import { EntitlementsContext, DEFAULT_ENTS, can } from './EntitlementsContext'
 
 function ConsentBanner({ onAccept, onReject }) {
   const { t } = useT()
@@ -53,7 +55,10 @@ const NAV_IDS = [
   { id: 'ai',       key: 'nav.ai',       icon: '✨' },
   { id: 'calendar', key: 'nav.calendar', icon: '📅' },
   { id: 'settings', key: 'nav.settings', icon: '⚙️' },
+  { id: 'plan',     key: 'nav.plan',     icon: '⭐' },
 ]
+
+const TIER_BADGE = { gratis: null, pro: 'Pro', negocios: 'Negocios', empresarial: '★' }
 
 function AppInner() {
   const { t } = useT()
@@ -64,7 +69,15 @@ function AppInner() {
   const [negocio,     setNegocio]     = useState(null)
   const [activeTab,   setActiveTab]   = useState('sales')
   const [darkMode,    setDarkMode]    = useState(() => localStorage.getItem('theme') === 'dark')
-  const [consent,     setConsent]     = useState(undefined) // undefined=cargando, null=sin respuesta, true/false
+  const [consent,     setConsent]     = useState(undefined)
+  const [ents,        setEnts]        = useState(DEFAULT_ENTS)
+
+  const refreshEnts = useCallback(async (email) => {
+    try {
+      const result = await window.api.license.init(email)
+      if (result) setEnts(result)
+    } catch {}
+  }, [])
 
   // Apply dark class to <html> whenever darkMode changes
   useEffect(() => {
@@ -88,12 +101,15 @@ function AppInner() {
           }
         } catch (_) {}
         setAuthUser(user)
+        // Initialize entitlements as soon as we have the email
+        refreshEnts(user.email)
       } else {
         setAuthUser(null)
+        setEnts(DEFAULT_ENTS)
       }
       setAuthLoading(false)
     })
-  }, [])
+  }, [refreshEnts])
 
   // Load consent once app is fully ready
   useEffect(() => {
@@ -139,66 +155,88 @@ function AppInner() {
     <Setup onComplete={(n) => { setNegocio(n); setStatus('ready') }} />
   )
 
-  return (
-    <div className="flex h-full bg-gray-50 dark:bg-gray-900 overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-52 flex-shrink-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
-        <div className="px-5 py-5 border-b border-gray-100 dark:border-gray-700">
-          <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">{t('app.yourbiz')}</p>
-          <p className="text-sm font-semibold text-gray-900 dark:text-white mt-0.5 truncate">{negocio?.nombre}</p>
-        </div>
-        <nav className="flex-1 p-3 space-y-1">
-          {NAV_IDS.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors text-left ${
-                activeTab === item.id
-                  ? 'bg-primary-light text-primary dark:bg-primary/20'
-                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-              }`}
-            >
-              <span>{item.icon}</span>
-              {t(item.key)}
-            </button>
-          ))}
-        </nav>
-        <div className="p-4 border-t border-gray-100 dark:border-gray-700 space-y-2">
-          <button
-            onClick={() => signOut(auth)}
-            className="w-full text-xs text-gray-400 hover:text-red-500 transition-colors text-center py-1"
-          >
-            {t('app.logout')}
-          </button>
-          <p className="text-xs text-gray-400 text-center">{t('app.version')}</p>
-        </div>
-      </aside>
+  const entCtx = { ents, can: (f) => can(ents, f), refreshEnts: () => refreshEnts(authUser?.email) }
+  const tierBadge = TIER_BADGE[ents.tier]
 
-      {/* Main content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-        {activeTab === 'sales'    && <Sales />}
-        {activeTab === 'products' && <Products />}
-        {activeTab === 'history'  && <History />}
-        {activeTab === 'board'    && <Board />}
-        {activeTab === 'ai'       && <AIAnalysis negocio={negocio} />}
-        {activeTab === 'calendar' && <Calendar negocio={negocio} />}
-        {activeTab === 'settings' && (
-          <Settings
-            negocio={negocio}
-            onNegocioUpdate={(n) => setNegocio(n)}
-            darkMode={darkMode}
-            onToggleDark={() => setDarkMode(v => !v)}
+  return (
+    <EntitlementsContext.Provider value={entCtx}>
+      <div className="flex h-full bg-gray-50 dark:bg-gray-900 overflow-hidden">
+        {/* Sidebar */}
+        <aside className="w-52 flex-shrink-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+          <div className="px-5 py-5 border-b border-gray-100 dark:border-gray-700">
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">{t('app.yourbiz')}</p>
+            <p className="text-sm font-semibold text-gray-900 dark:text-white mt-0.5 truncate">{negocio?.nombre}</p>
+          </div>
+          <nav className="flex-1 p-3 space-y-1">
+            {NAV_IDS.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors text-left ${
+                  activeTab === item.id
+                    ? 'bg-primary-light text-primary dark:bg-primary/20'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}
+              >
+                <span>{item.icon}</span>
+                <span className="flex-1">{t(item.key)}</span>
+                {item.id === 'plan' && tierBadge && (
+                  <span className="text-xs font-bold bg-yellow-400 text-yellow-900 rounded px-1">{tierBadge}</span>
+                )}
+              </button>
+            ))}
+          </nav>
+          <div className="p-4 border-t border-gray-100 dark:border-gray-700 space-y-2">
+            {ents.tier === 'gratis' && (
+              <button
+                onClick={() => setActiveTab('plan')}
+                className="w-full text-xs font-semibold text-primary bg-primary/10 hover:bg-primary/20 transition-colors rounded-md py-1.5 px-2"
+              >
+                ⭐ Mejorar plan
+              </button>
+            )}
+            <button
+              onClick={() => signOut(auth)}
+              className="w-full text-xs text-gray-400 hover:text-red-500 transition-colors text-center py-1"
+            >
+              {t('app.logout')}
+            </button>
+            <p className="text-xs text-gray-400 text-center">{t('app.version')}</p>
+          </div>
+        </aside>
+
+        {/* Main content */}
+        <main className="flex-1 flex flex-col overflow-hidden">
+          {activeTab === 'sales'    && <Sales />}
+          {activeTab === 'products' && <Products onGoToPlan={() => setActiveTab('plan')} />}
+          {activeTab === 'history'  && <History />}
+          {activeTab === 'board'    && <Board />}
+          {activeTab === 'ai'       && <AIAnalysis negocio={negocio} />}
+          {activeTab === 'calendar' && <Calendar negocio={negocio} />}
+          {activeTab === 'settings' && (
+            <Settings
+              negocio={negocio}
+              onNegocioUpdate={(n) => setNegocio(n)}
+              darkMode={darkMode}
+              onToggleDark={() => setDarkMode(v => !v)}
+            />
+          )}
+          {activeTab === 'plan' && (
+            <Plan
+              userEmail={authUser?.email}
+              onActivated={() => refreshEnts(authUser?.email)}
+            />
+          )}
+        </main>
+
+        {consent === null && (
+          <ConsentBanner
+            onAccept={() => handleConsent(true)}
+            onReject={() => handleConsent(false)}
           />
         )}
-      </main>
-
-      {consent === null && (
-        <ConsentBanner
-          onAccept={() => handleConsent(true)}
-          onReject={() => handleConsent(false)}
-        />
-      )}
-    </div>
+      </div>
+    </EntitlementsContext.Provider>
   )
 }
 

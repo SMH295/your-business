@@ -48,5 +48,11 @@ contextBridge.exposeInMainWorld('api', {
     track:      (name, params) => ipcRenderer.invoke('telemetry:track', name, params),
     getConsent: ()             => ipcRenderer.invoke('telemetry:getConsent'),
     setConsent: (val)          => ipcRenderer.invoke('telemetry:setConsent', val)
+  },
+  license: {
+    init:              (email) => ipcRenderer.invoke('license:init', email),
+    getEntitlements:   ()      => ipcRenderer.invoke('license:getEntitlements'),
+    activate:          (key, email) => ipcRenderer.invoke('license:activate', key, email),
+    checkProductLimit: ()      => ipcRenderer.invoke('license:checkProductLimit'),
   }
 })

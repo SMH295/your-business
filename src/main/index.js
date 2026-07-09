@@ -5,6 +5,7 @@ const fs = require('fs')
 const os = require('os')
 const { randomUUID } = require('crypto')
 const Database = require('better-sqlite3')
+const ent = require('./entitlements')
 
 // ─── Telemetry ────────────────────────────────────────────────────────────────
 // Replaced at build time by electron-vite define; fallback for dev mode
@@ -152,6 +153,11 @@ function initDb() {
       date TEXT PRIMARY KEY,
       note TEXT NOT NULL DEFAULT ''
     );
+    CREATE TABLE IF NOT EXISTS license (
+      id           INTEGER PRIMARY KEY AUTOINCREMENT,
+      key          TEXT NOT NULL,
+      activated_at TEXT NOT NULL
+    );
   `)
 
   // Migration: add new columns if they don't exist (for existing installs)
@@ -191,7 +197,17 @@ function registerHandlers() {
 
   ipcMain.handle('productos:create', (_e, { nombre, precio }) => {
     try {
+      const used = ent.usage('products', db)
+      const lim  = ent.limit('products')
+      if (used >= lim) {
+        return { __error: 'product_limit_reached', usage: used, limit: lim }
+      }
       const r = db.prepare('INSERT INTO productos (nombre, precio) VALUES (?, ?)').run(nombre, precio)
+      // Emit warning threshold event to renderer via queued telemetry
+      const newUsed = used + 1
+      if (newUsed === ent.FREE_PRODUCT_WARNING) {
+        telTrackEvent('product_limit_warning', { usage: newUsed, limit: lim })
+      }
       return db.prepare('SELECT * FROM productos WHERE id = ?').get(r.lastInsertRowid)
     } catch (err) { console.error('productos:create', err); throw err }
   })
@@ -431,6 +447,41 @@ function registerHandlers() {
       break
     }
     throw new Error(lastErr)
+  })
+
+  // License & Entitlements
+  ipcMain.handle('license:init', (_e, userEmail) => {
+    const prev   = ent.getEntitlements()
+    const result = ent.loadEntitlements(db, userEmail)
+    // Fire expired / downgrade events on tier changes
+    if (prev.tier !== 'gratis' && result.tier === 'gratis' && !result.founder) {
+      telTrackEvent('license_expired',   { prev_tier: prev.tier })
+      telTrackEvent('downgrade_to_free', { prev_tier: prev.tier })
+    }
+    return result
+  })
+
+  ipcMain.handle('license:getEntitlements', () => {
+    return ent.getEntitlements()
+  })
+
+  ipcMain.handle('license:activate', (_e, key, userEmail) => {
+    const result = ent.activateLicense(db, key, userEmail)
+    if (result.ok) {
+      telTrackEvent('license_activated', { tier: result.tier, plan: result.plan })
+    }
+    return result
+  })
+
+  ipcMain.handle('license:checkProductLimit', () => {
+    const used = ent.usage('products', db)
+    const lim  = ent.limit('products')
+    return {
+      usage:   used,
+      limit:   lim,
+      warning: used >= ent.FREE_PRODUCT_WARNING && lim < Infinity,
+      blocked: used >= lim,
+    }
   })
 }
 

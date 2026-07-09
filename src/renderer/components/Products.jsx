@@ -3,27 +3,22 @@ import Button from './ui/Button'
 import Modal from './ui/Modal'
 import EmptyState from './ui/EmptyState'
 import ConfirmDialog from './ui/ConfirmDialog'
+import { useEntitlements, FREE_PRODUCT_WARNING, FREE_PRODUCT_HARD } from '../EntitlementsContext'
 
 function fmt(n) {
   return Number(n).toLocaleString('es-CO')
 }
 
-// Parsea números en formato colombiano: 22.000 → 22000 | 22,50 → 22.5 | 1.234,56 → 1234.56
 function parsePrecio(str) {
   str = String(str).trim().replace(/[^\d.,]/g, '')
   if (!str) return NaN
   if (str.includes(',')) {
-    // Coma = separador decimal (formato AR): quitar puntos de miles, reemplazar coma por punto
     return parseFloat(str.replace(/\./g, '').replace(',', '.'))
   }
   const parts = str.split('.')
   if (parts.length === 1) return parseFloat(str)
   const lastPart = parts[parts.length - 1]
-  if (lastPart.length === 3) {
-    // Punto seguido de 3 dígitos = separador de miles
-    return parseFloat(parts.join(''))
-  }
-  // Punto con 1-2 dígitos = separador decimal
+  if (lastPart.length === 3) return parseFloat(parts.join(''))
   return parseFloat(str)
 }
 
@@ -82,16 +77,62 @@ function ProductModal({ product, onSave, onClose }) {
   )
 }
 
-export default function Products() {
+function PaywallModal({ onClose, onGoToPlan }) {
+  useEffect(() => {
+    window.api?.telemetry?.track('paywall_shown', { trigger: 'product_limit', tier: 'gratis' })
+  }, [])
+  return (
+    <Modal title="Límite de productos alcanzado" onClose={() => {
+      window.api?.telemetry?.track('paywall_dismissed', { trigger: 'product_limit' })
+      onClose()
+    }}>
+      <div className="text-center space-y-4 py-2">
+        <p className="text-4xl">📦</p>
+        <div>
+          <p className="font-semibold text-gray-900 dark:text-white">
+            El plan Gratis permite hasta {FREE_PRODUCT_HARD} productos
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Actualizá a Pro para agregar productos ilimitados y desbloquear exportaciones y Análisis IA.
+          </p>
+        </div>
+        <div className="flex gap-3 justify-center pt-2">
+          <Button variant="secondary" onClick={() => {
+            window.api?.telemetry?.track('paywall_dismissed', { trigger: 'product_limit' })
+            onClose()
+          }}>
+            Ahora no
+          </Button>
+          <Button variant="primary" onClick={() => {
+            window.api?.telemetry?.track('paywall_cta_clicked', { trigger: 'product_limit', tier: 'pro' })
+            onGoToPlan()
+            onClose()
+          }}>
+            ⭐ Ver planes
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  )
+}
+
+export default function Products({ onGoToPlan }) {
+  const { ents, can } = useEntitlements()
   const [productos, setProductos] = useState([])
   const [loading, setLoading] = useState(true)
-  const [modal, setModal] = useState(null) // null | 'add' | { product }
-  const [confirm, setConfirm] = useState(null) // null | product to delete
+  const [modal, setModal] = useState(null)
+  const [confirm, setConfirm] = useState(null)
   const [busqueda, setBusqueda] = useState('')
+  const [showPaywall, setShowPaywall] = useState(false)
 
   const productosFiltrados = busqueda.trim()
     ? productos.filter(p => p.nombre.toLowerCase().includes(busqueda.toLowerCase()))
     : productos
+
+  const unlimited = can('unlimited_products')
+  const count = productos.length
+  const atWarning = !unlimited && count >= FREE_PRODUCT_WARNING && count < FREE_PRODUCT_HARD
+  const atLimit   = !unlimited && count >= FREE_PRODUCT_HARD
 
   async function loadProductos() {
     const list = await window.api.productos.getAll()
@@ -101,9 +142,22 @@ export default function Products() {
 
   useEffect(() => { loadProductos() }, [])
 
+  function handleAddClick() {
+    if (atLimit) {
+      setShowPaywall(true)
+      return
+    }
+    setModal('add')
+  }
+
   async function handleSave(data) {
     if (modal === 'add') {
-      await window.api.productos.create(data)
+      const result = await window.api.productos.create(data)
+      if (result?.__error === 'product_limit_reached') {
+        setModal(null)
+        setShowPaywall(true)
+        return
+      }
       window.api.telemetry.track('product_created', {})
     } else {
       await window.api.productos.update({ id: modal.id, ...data })
@@ -126,9 +180,34 @@ export default function Products() {
     <div className="flex-1 flex flex-col overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 space-y-3">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Productos</h1>
-          <Button variant="primary" onClick={() => setModal('add')}>+ Agregar producto</Button>
+          <div>
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Productos</h1>
+            {!unlimited && (
+              <p className={`text-xs mt-0.5 ${atLimit ? 'text-red-500 font-semibold' : atWarning ? 'text-yellow-600 dark:text-yellow-400 font-medium' : 'text-gray-400'}`}>
+                {count} / {FREE_PRODUCT_HARD} productos{atLimit ? ' — límite alcanzado' : ''}
+              </p>
+            )}
+          </div>
+          <Button variant="primary" onClick={handleAddClick}>+ Agregar producto</Button>
         </div>
+
+        {atWarning && (
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg px-4 py-2.5 flex items-center justify-between gap-3">
+            <p className="text-xs text-yellow-800 dark:text-yellow-200 font-medium">
+              ⚠️ Te quedan {FREE_PRODUCT_HARD - count} producto{FREE_PRODUCT_HARD - count !== 1 ? 's' : ''} antes de alcanzar el límite del plan Gratis.
+            </p>
+            <button
+              onClick={() => {
+                window.api?.telemetry?.track('paywall_cta_clicked', { trigger: 'product_warning', tier: 'pro' })
+                onGoToPlan?.()
+              }}
+              className="text-xs font-bold text-yellow-700 dark:text-yellow-300 whitespace-nowrap hover:underline"
+            >
+              Ver planes →
+            </button>
+          </div>
+        )}
+
         <input
           type="text"
           value={busqueda}
@@ -182,7 +261,6 @@ export default function Products() {
         )}
       </div>
 
-
       {modal && (
         <ProductModal
           product={modal === 'add' ? null : modal}
@@ -196,6 +274,13 @@ export default function Products() {
           message={`¿Eliminar "${confirm.nombre}"? Esta acción no se puede deshacer.`}
           onConfirm={handleDelete}
           onCancel={() => setConfirm(null)}
+        />
+      )}
+
+      {showPaywall && (
+        <PaywallModal
+          onClose={() => setShowPaywall(false)}
+          onGoToPlan={() => onGoToPlan?.()}
         />
       )}
     </div>
