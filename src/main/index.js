@@ -5,7 +5,80 @@ const fs = require('fs')
 const os = require('os')
 const { randomUUID } = require('crypto')
 const Database = require('better-sqlite3')
-const ent = require('./entitlements')
+const nacl = require('tweetnacl')
+
+// ─── License verification (Ed25519 offline) ───────────────────────────────────
+const _LIC_PUBLIC_KEY = Buffer.from('salFzThZYuhzlElqLbiaLx8Eqhq0lNzuly1rV9SbJWg=', 'base64')
+const _LIC_GRACE_MS   = 7 * 24 * 60 * 60 * 1000
+const _FOUNDER_EMAIL  = 'santiagomh295@gmail.com'
+
+function _b64urlDecode(s) {
+  const p = s.replace(/-/g, '+').replace(/_/g, '/')
+  return Buffer.from(p + '='.repeat((4 - p.length % 4) % 4), 'base64')
+}
+
+function _verifyLicenseKey(key, email) {
+  try {
+    if (typeof key !== 'string' || !key.startsWith('YB1-')) return { valid: false, reason: 'invalid_format' }
+    const rest = key.slice(4), dot = rest.lastIndexOf('.')
+    if (dot === -1) return { valid: false, reason: 'invalid_format' }
+    const payloadBytes = _b64urlDecode(rest.slice(0, dot))
+    const sigBytes     = _b64urlDecode(rest.slice(dot + 1))
+    if (!nacl.sign.detached.verify(payloadBytes, sigBytes, _LIC_PUBLIC_KEY))
+      return { valid: false, reason: 'invalid_signature' }
+    const payload = JSON.parse(payloadBytes.toString('utf8'))
+    if (payload.email !== email) return { valid: false, reason: 'email_mismatch' }
+    if (payload.expires_at) {
+      const exp = new Date(payload.expires_at).getTime()
+      if (Date.now() > exp + _LIC_GRACE_MS) return { valid: false, reason: 'expired', payload }
+      return { valid: true, payload, grace: Date.now() > exp }
+    }
+    return { valid: true, payload, grace: false }
+  } catch { return { valid: false, reason: 'parse_error' } }
+}
+
+// ─── Entitlements ─────────────────────────────────────────────────────────────
+const _FREE_PRODUCT_WARNING = 35
+const _FREE_PRODUCT_HARD    = 40
+const _PRODUCT_LIMITS = { gratis: 40, pro: Infinity, negocios: Infinity, empresarial: Infinity }
+let _currentEnts = null
+
+function _founderEnts() {
+  return { tier: 'empresarial', plan: 'lifetime', valid: true, grace: false, expires_at: null, founder: true }
+}
+
+function _loadEntitlements(db, userEmail) {
+  if (userEmail && userEmail.toLowerCase() === _FOUNDER_EMAIL.toLowerCase()) {
+    _currentEnts = _founderEnts(); return _currentEnts
+  }
+  try {
+    const row = db.prepare('SELECT key FROM license ORDER BY id DESC LIMIT 1').get()
+    if (row && row.key) {
+      const r = _verifyLicenseKey(row.key, userEmail)
+      if (r.valid) {
+        _currentEnts = { tier: r.payload.tier, plan: r.payload.plan, valid: true,
+          grace: r.grace, expires_at: r.payload.expires_at, founder: false }
+        return _currentEnts
+      }
+    }
+  } catch {}
+  _currentEnts = { tier: 'gratis', plan: null, valid: false, grace: false, expires_at: null, founder: false }
+  return _currentEnts
+}
+
+function _getEnts()              { return _currentEnts || { tier: 'gratis', plan: null, valid: false, grace: false, expires_at: null, founder: false } }
+function _productLimit()         { return _PRODUCT_LIMITS[_getEnts().tier] ?? 40 }
+function _productUsage(db)       { try { return db.prepare('SELECT COUNT(*) as n FROM productos').get().n } catch { return 0 } }
+function _activateLicense(db, key, email) {
+  const r = _verifyLicenseKey(key, email)
+  if (!r.valid) return { ok: false, reason: r.reason }
+  try {
+    db.prepare('INSERT INTO license (key, activated_at) VALUES (?, ?)').run(key, new Date().toISOString())
+    _loadEntitlements(db, email)
+    return { ok: true, tier: r.payload.tier, plan: r.payload.plan }
+  } catch { return { ok: false, reason: 'db_error' } }
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 // ─── Telemetry ────────────────────────────────────────────────────────────────
 // Replaced at build time by electron-vite define; fallback for dev mode
@@ -197,15 +270,14 @@ function registerHandlers() {
 
   ipcMain.handle('productos:create', (_e, { nombre, precio }) => {
     try {
-      const used = ent.usage('products', db)
-      const lim  = ent.limit('products')
+      const used = _productUsage(db)
+      const lim  = _productLimit()
       if (used >= lim) {
         return { __error: 'product_limit_reached', usage: used, limit: lim }
       }
       const r = db.prepare('INSERT INTO productos (nombre, precio) VALUES (?, ?)').run(nombre, precio)
-      // Emit warning threshold event to renderer via queued telemetry
       const newUsed = used + 1
-      if (newUsed === ent.FREE_PRODUCT_WARNING) {
+      if (newUsed === _FREE_PRODUCT_WARNING) {
         telTrackEvent('product_limit_warning', { usage: newUsed, limit: lim })
       }
       return db.prepare('SELECT * FROM productos WHERE id = ?').get(r.lastInsertRowid)
@@ -451,9 +523,8 @@ function registerHandlers() {
 
   // License & Entitlements
   ipcMain.handle('license:init', (_e, userEmail) => {
-    const prev   = ent.getEntitlements()
-    const result = ent.loadEntitlements(db, userEmail)
-    // Fire expired / downgrade events on tier changes
+    const prev   = _getEnts()
+    const result = _loadEntitlements(db, userEmail)
     if (prev.tier !== 'gratis' && result.tier === 'gratis' && !result.founder) {
       telTrackEvent('license_expired',   { prev_tier: prev.tier })
       telTrackEvent('downgrade_to_free', { prev_tier: prev.tier })
@@ -461,25 +532,21 @@ function registerHandlers() {
     return result
   })
 
-  ipcMain.handle('license:getEntitlements', () => {
-    return ent.getEntitlements()
-  })
+  ipcMain.handle('license:getEntitlements', () => _getEnts())
 
   ipcMain.handle('license:activate', (_e, key, userEmail) => {
-    const result = ent.activateLicense(db, key, userEmail)
-    if (result.ok) {
-      telTrackEvent('license_activated', { tier: result.tier, plan: result.plan })
-    }
+    const result = _activateLicense(db, key, userEmail)
+    if (result.ok) telTrackEvent('license_activated', { tier: result.tier, plan: result.plan })
     return result
   })
 
   ipcMain.handle('license:checkProductLimit', () => {
-    const used = ent.usage('products', db)
-    const lim  = ent.limit('products')
+    const used = _productUsage(db)
+    const lim  = _productLimit()
     return {
       usage:   used,
       limit:   lim,
-      warning: used >= ent.FREE_PRODUCT_WARNING && lim < Infinity,
+      warning: used >= _FREE_PRODUCT_WARNING && lim < Infinity,
       blocked: used >= lim,
     }
   })
