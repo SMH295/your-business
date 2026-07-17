@@ -54,5 +54,9 @@ contextBridge.exposeInMainWorld('api', {
     getEntitlements:   ()      => ipcRenderer.invoke('license:getEntitlements'),
     activate:          (key, email) => ipcRenderer.invoke('license:activate', key, email),
     checkProductLimit: ()      => ipcRenderer.invoke('license:checkProductLimit'),
+  },
+  db: {
+    switchUser: (uid, email) => ipcRenderer.invoke('db:switchUser', uid, email),
+    closeUser:  ()           => ipcRenderer.invoke('db:closeUser'),
   }
 })

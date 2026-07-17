@@ -191,12 +191,23 @@ function getOrCreateDeviceId() {
 }
 
 // --- Database setup ---
-let db
+// appDb: shared per-device (telemetry only)
+// userDb: per Firebase user (all business data)
+let db      = null  // alias for appDb, used by telemetry
+let userDb  = null
 
-function initDb() {
+function initAppDb() {
   const dbPath = path.join(app.getPath('userData'), 'yourbusiness.db')
   db = new Database(dbPath)
-  db.exec(`
+  // Only telemetry tables live here
+}
+
+function initUserDb(uid) {
+  // Sanitize uid to safe filename chars
+  const safe = uid.replace(/[^a-zA-Z0-9_-]/g, '_')
+  const dbPath = path.join(app.getPath('userData'), `yourbusiness-${safe}.db`)
+  const udb = new Database(dbPath)
+  udb.exec(`
     CREATE TABLE IF NOT EXISTS negocio (
       id     INTEGER PRIMARY KEY,
       nombre TEXT NOT NULL
@@ -232,82 +243,95 @@ function initDb() {
       activated_at TEXT NOT NULL
     );
   `)
-
-  // Migration: add new columns if they don't exist (for existing installs)
-  const existingCols = db.prepare('PRAGMA table_info(pedidos)').all().map(c => c.name)
-  if (!existingCols.includes('numero_orden')) db.exec('ALTER TABLE pedidos ADD COLUMN numero_orden INTEGER')
-  if (!existingCols.includes('total'))        db.exec('ALTER TABLE pedidos ADD COLUMN total REAL')
-  if (!existingCols.includes('detalle'))      db.exec('ALTER TABLE pedidos ADD COLUMN detalle TEXT')
+  // Migrations for existing installs
+  const cols = udb.prepare('PRAGMA table_info(pedidos)').all().map(c => c.name)
+  if (!cols.includes('numero_orden')) udb.exec('ALTER TABLE pedidos ADD COLUMN numero_orden INTEGER')
+  if (!cols.includes('total'))        udb.exec('ALTER TABLE pedidos ADD COLUMN total REAL')
+  if (!cols.includes('detalle'))      udb.exec('ALTER TABLE pedidos ADD COLUMN detalle TEXT')
+  return udb
 }
 
 // --- IPC Handlers ---
 function registerHandlers() {
   ipcMain.handle('app:getDeviceId', () => getOrCreateDeviceId())
 
+  // Switch to per-user DB on login / clear on logout
+  ipcMain.handle('db:switchUser', (_e, uid, userEmail) => {
+    if (userDb) { try { userDb.close() } catch {} }
+    userDb = initUserDb(uid)
+    _loadEntitlements(userDb, userEmail)
+    return { ok: true }
+  })
+  ipcMain.handle('db:closeUser', () => {
+    if (userDb) { try { userDb.close() } catch {} userDb = null }
+    _currentEnts = null
+    return { ok: true }
+  })
+
   ipcMain.handle('negocio:get', () => {
-    try { return db.prepare('SELECT * FROM negocio LIMIT 1').get() || null }
+    try { return userDb.prepare('SELECT * FROM negocio LIMIT 1').get() || null }
     catch (err) { console.error('negocio:get', err); throw err }
   })
 
   ipcMain.handle('negocio:update', (_e, { nombre }) => {
     try {
-      db.prepare('UPDATE negocio SET nombre = ? WHERE id = 1').run(nombre)
-      return db.prepare('SELECT * FROM negocio LIMIT 1').get()
+      userDb.prepare('UPDATE negocio SET nombre = ? WHERE id = 1').run(nombre)
+      return userDb.prepare('SELECT * FROM negocio LIMIT 1').get()
     } catch (err) { console.error('negocio:update', err); throw err }
   })
 
   ipcMain.handle('negocio:create', (_e, { nombre }) => {
     try {
-      db.prepare('INSERT INTO negocio (nombre) VALUES (?)').run(nombre)
-      return db.prepare('SELECT * FROM negocio LIMIT 1').get()
+      userDb.prepare('INSERT INTO negocio (nombre) VALUES (?)').run(nombre)
+      return userDb.prepare('SELECT * FROM negocio LIMIT 1').get()
     } catch (err) { console.error('negocio:create', err); throw err }
   })
 
   ipcMain.handle('productos:getAll', () => {
-    try { return db.prepare('SELECT * FROM productos ORDER BY nombre ASC').all() }
+    try { return userDb.prepare('SELECT * FROM productos ORDER BY nombre ASC').all() }
     catch (err) { console.error('productos:getAll', err); throw err }
   })
 
   ipcMain.handle('productos:create', (_e, { nombre, precio }) => {
     try {
-      const used = _productUsage(db)
+      const used = _productUsage(userDb)
       const lim  = _productLimit()
       if (used >= lim) {
         return { __error: 'product_limit_reached', usage: used, limit: lim }
       }
-      const r = db.prepare('INSERT INTO productos (nombre, precio) VALUES (?, ?)').run(nombre, precio)
+      const r = userDb.prepare('INSERT INTO productos (nombre, precio) VALUES (?, ?)').run(nombre, precio)
       const newUsed = used + 1
       if (newUsed === _FREE_PRODUCT_WARNING) {
         telTrackEvent('product_limit_warning', { usage: newUsed, limit: lim })
       }
-      return db.prepare('SELECT * FROM productos WHERE id = ?').get(r.lastInsertRowid)
+      return userDb.prepare('SELECT * FROM productos WHERE id = ?').get(r.lastInsertRowid)
     } catch (err) { console.error('productos:create', err); throw err }
   })
 
   ipcMain.handle('productos:update', (_e, { id, nombre, precio }) => {
     try {
-      db.prepare('UPDATE productos SET nombre = ?, precio = ? WHERE id = ?').run(nombre, precio, id)
-      return db.prepare('SELECT * FROM productos WHERE id = ?').get(id)
+      userDb.prepare('UPDATE productos SET nombre = ?, precio = ? WHERE id = ?').run(nombre, precio, id)
+      return userDb.prepare('SELECT * FROM productos WHERE id = ?').get(id)
     } catch (err) { console.error('productos:update', err); throw err }
   })
 
   ipcMain.handle('productos:delete', (_e, { id }) => {
-    try { db.prepare('DELETE FROM productos WHERE id = ?').run(id); return { ok: true } }
+    try { userDb.prepare('DELETE FROM productos WHERE id = ?').run(id); return { ok: true } }
     catch (err) { console.error('productos:delete', err); throw err }
   })
 
   ipcMain.handle('ventas:create', (_e, { numero_orden, total, detalle }) => {
     try {
-      const r = db
+      const r = userDb
         .prepare('INSERT INTO ventas (numero_orden, total, detalle) VALUES (?, ?, ?)')
         .run(numero_orden, total, detalle)
-      return db.prepare('SELECT * FROM ventas WHERE id = ?').get(r.lastInsertRowid)
+      return userDb.prepare('SELECT * FROM ventas WHERE id = ?').get(r.lastInsertRowid)
     } catch (err) { console.error('ventas:create', err); throw err }
   })
 
   ipcMain.handle('ventas:getToday', () => {
     try {
-      return db
+      return userDb
         .prepare("SELECT * FROM ventas WHERE DATE(fecha_hora) = DATE('now') ORDER BY numero_orden ASC")
         .all()
     } catch (err) { console.error('ventas:getToday', err); throw err }
@@ -315,41 +339,41 @@ function registerHandlers() {
 
   ipcMain.handle('ventas:getNextOrder', () => {
     try {
-      return db
+      return userDb
         .prepare("SELECT COUNT(*) + 1 as next FROM ventas WHERE DATE(fecha_hora) = DATE('now')")
         .get().next
     } catch (err) { console.error('ventas:getNextOrder', err); throw err }
   })
 
   ipcMain.handle('ventas:delete', (_e, { id }) => {
-    try { db.prepare('DELETE FROM ventas WHERE id = ?').run(id); return { ok: true } }
+    try { userDb.prepare('DELETE FROM ventas WHERE id = ?').run(id); return { ok: true } }
     catch (err) { console.error('ventas:delete', err); throw err }
   })
 
   // --- Pedidos (Tablero) ---
   ipcMain.handle('pedidos:getAll', () => {
-    try { return db.prepare('SELECT * FROM pedidos ORDER BY hecho ASC, creado_en ASC').all() }
+    try { return userDb.prepare('SELECT * FROM pedidos ORDER BY hecho ASC, creado_en ASC').all() }
     catch (err) { console.error('pedidos:getAll', err); throw err }
   })
 
   ipcMain.handle('pedidos:create', (_e, { numero_orden, total, detalle, nota, hecho }) => {
     try {
-      const r = db
+      const r = userDb
         .prepare('INSERT INTO pedidos (numero_orden, total, detalle, nota, hecho) VALUES (?, ?, ?, ?, ?)')
         .run(numero_orden, total, detalle ?? null, nota ?? '', hecho ?? 0)
-      return db.prepare('SELECT * FROM pedidos WHERE id = ?').get(r.lastInsertRowid)
+      return userDb.prepare('SELECT * FROM pedidos WHERE id = ?').get(r.lastInsertRowid)
     } catch (err) { console.error('pedidos:create', err); throw err }
   })
 
   ipcMain.handle('pedidos:update', (_e, { id, nota, hecho }) => {
     try {
-      db.prepare('UPDATE pedidos SET nota = ?, hecho = ? WHERE id = ?').run(nota, hecho, id)
+      userDb.prepare('UPDATE pedidos SET nota = ?, hecho = ? WHERE id = ?').run(nota, hecho, id)
       return { ok: true }
     } catch (err) { console.error('pedidos:update', err); throw err }
   })
 
   ipcMain.handle('pedidos:delete', (_e, { id }) => {
-    try { db.prepare('DELETE FROM pedidos WHERE id = ?').run(id); return { ok: true } }
+    try { userDb.prepare('DELETE FROM pedidos WHERE id = ?').run(id); return { ok: true } }
     catch (err) { console.error('pedidos:delete', err); throw err }
   })
 
@@ -372,7 +396,7 @@ function registerHandlers() {
   // Calendar
   ipcMain.handle('calendar:getMonthSummary', (_e, year, month) => {
     try {
-      return db.prepare(`
+      return userDb.prepare(`
         SELECT DATE(fecha_hora, 'localtime') as date,
                COUNT(*) as count,
                SUM(total) as total
@@ -386,7 +410,7 @@ function registerHandlers() {
 
   ipcMain.handle('calendar:getDaySales', (_e, date) => {
     try {
-      return db.prepare(`
+      return userDb.prepare(`
         SELECT * FROM ventas
         WHERE DATE(fecha_hora, 'localtime') = ?
         ORDER BY numero_orden ASC
@@ -396,14 +420,14 @@ function registerHandlers() {
 
   ipcMain.handle('calendar:getNote', (_e, date) => {
     try {
-      const row = db.prepare('SELECT note FROM calendar_notes WHERE date = ?').get(date)
+      const row = userDb.prepare('SELECT note FROM calendar_notes WHERE date = ?').get(date)
       return row ? row.note : ''
     } catch (err) { console.error('calendar:getNote', err); throw err }
   })
 
   ipcMain.handle('calendar:setNote', (_e, date, note) => {
     try {
-      db.prepare('INSERT OR REPLACE INTO calendar_notes (date, note) VALUES (?, ?)').run(date, note)
+      userDb.prepare('INSERT OR REPLACE INTO calendar_notes (date, note) VALUES (?, ?)').run(date, note)
       return true
     } catch (err) { console.error('calendar:setNote', err); throw err }
   })
@@ -422,19 +446,19 @@ function registerHandlers() {
   // Analytics
   ipcMain.handle('analytics:getStats', () => {
     try {
-      const ventasHoy = db.prepare(`
+      const ventasHoy = userDb.prepare(`
         SELECT COUNT(*) as count, COALESCE(SUM(total),0) as total
         FROM ventas WHERE DATE(fecha_hora,'localtime') = DATE('now','localtime')
       `).get()
 
-      const ventasPorHora = db.prepare(`
+      const ventasPorHora = userDb.prepare(`
         SELECT strftime('%H',fecha_hora,'localtime') as hora,
                COUNT(*) as count, COALESCE(SUM(total),0) as total
         FROM ventas WHERE DATE(fecha_hora,'localtime') = DATE('now','localtime')
         GROUP BY hora ORDER BY hora
       `).all()
 
-      const ventasPorDia = db.prepare(`
+      const ventasPorDia = userDb.prepare(`
         SELECT DATE(fecha_hora,'localtime') as dia,
                COUNT(*) as count, COALESCE(SUM(total),0) as total
         FROM ventas
@@ -442,7 +466,7 @@ function registerHandlers() {
         GROUP BY dia ORDER BY dia
       `).all()
 
-      const todasVentas = db.prepare('SELECT detalle FROM ventas').all()
+      const todasVentas = userDb.prepare('SELECT detalle FROM ventas').all()
       const pm = {}
       todasVentas.forEach(v => {
         try {
@@ -524,7 +548,7 @@ function registerHandlers() {
   // License & Entitlements
   ipcMain.handle('license:init', (_e, userEmail) => {
     const prev   = _getEnts()
-    const result = _loadEntitlements(db, userEmail)
+    const result = _loadEntitlements(userDb, userEmail)
     if (prev.tier !== 'gratis' && result.tier === 'gratis' && !result.founder) {
       telTrackEvent('license_expired',   { prev_tier: prev.tier })
       telTrackEvent('downgrade_to_free', { prev_tier: prev.tier })
@@ -535,13 +559,13 @@ function registerHandlers() {
   ipcMain.handle('license:getEntitlements', () => _getEnts())
 
   ipcMain.handle('license:activate', (_e, key, userEmail) => {
-    const result = _activateLicense(db, key, userEmail)
+    const result = _activateLicense(userDb, key, userEmail)
     if (result.ok) telTrackEvent('license_activated', { tier: result.tier, plan: result.plan })
     return result
   })
 
   ipcMain.handle('license:checkProductLimit', () => {
-    const used = _productUsage(db)
+    const used = _productUsage(userDb)
     const lim  = _productLimit()
     return {
       usage:   used,
@@ -600,7 +624,7 @@ function setupUpdater() {
 }
 
 app.whenReady().then(() => {
-  initDb()
+  initAppDb()
   _initTelemetry(db, app.getVersion())
   registerHandlers()
   createWindow()

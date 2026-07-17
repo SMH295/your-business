@@ -31,7 +31,7 @@ const T = {
   es: {
     'nav.sales':'Ventas','nav.products':'Productos','nav.history':'Historial',
     'nav.board':'Tablero','nav.ai':'Análisis IA','nav.calendar':'Calendario','nav.settings':'Configuración','nav.plan':'Mi Plan',
-    'app.yourbiz':'Tu negocio','app.logout':'Cerrar sesión','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'Tu negocio','app.logout':'Cerrar sesión','app.version':'Your Business v1.2.3',
     'settings.title':'Configuración','settings.appearance':'Apariencia','settings.theme':'Tema de la interfaz',
     'settings.dark':'🌙 Oscuro','settings.light':'☀️ Claro','settings.language':'Idioma',
     'settings.language_label':'Idioma de la app',
@@ -72,7 +72,7 @@ const T = {
   en: {
     'nav.sales':'Sales','nav.products':'Products','nav.history':'History',
     'nav.board':'Board','nav.ai':'AI Analysis','nav.calendar':'Calendar','nav.settings':'Settings','nav.plan':'My Plan',
-    'app.yourbiz':'Your business','app.logout':'Sign out','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'Your business','app.logout':'Sign out','app.version':'Your Business v1.2.3',
     'settings.title':'Settings','settings.appearance':'Appearance','settings.theme':'Interface theme',
     'settings.dark':'🌙 Dark','settings.light':'☀️ Light','settings.language':'Language',
     'settings.language_label':'App language',
@@ -113,7 +113,7 @@ const T = {
   pt: {
     'nav.sales':'Vendas','nav.products':'Produtos','nav.history':'Histórico',
     'nav.board':'Quadro','nav.ai':'Análise IA','nav.calendar':'Calendário','nav.settings':'Configurações','nav.plan':'Meu Plano',
-    'app.yourbiz':'Seu negócio','app.logout':'Sair','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'Seu negócio','app.logout':'Sair','app.version':'Your Business v1.2.3',
     'settings.title':'Configurações','settings.appearance':'Aparência','settings.theme':'Tema da interface',
     'settings.dark':'🌙 Escuro','settings.light':'☀️ Claro','settings.language':'Idioma',
     'settings.language_label':'Idioma do aplicativo',
@@ -154,7 +154,7 @@ const T = {
   fr: {
     'nav.sales':'Ventes','nav.products':'Produits','nav.history':'Historique',
     'nav.board':'Tableau','nav.ai':'Analyse IA','nav.calendar':'Calendrier','nav.settings':'Paramètres','nav.plan':'Mon Plan',
-    'app.yourbiz':'Votre entreprise','app.logout':'Déconnexion','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'Votre entreprise','app.logout':'Déconnexion','app.version':'Your Business v1.2.3',
     'settings.title':'Paramètres','settings.appearance':'Apparence','settings.theme':'Thème de l\'interface',
     'settings.dark':'🌙 Sombre','settings.light':'☀️ Clair','settings.language':'Langue',
     'settings.language_label':'Langue de l\'application',
@@ -195,7 +195,7 @@ const T = {
   de: {
     'nav.sales':'Verkauf','nav.products':'Produkte','nav.history':'Verlauf',
     'nav.board':'Tafel','nav.ai':'KI-Analyse','nav.calendar':'Kalender','nav.settings':'Einstellungen','nav.plan':'Mein Plan',
-    'app.yourbiz':'Ihr Unternehmen','app.logout':'Abmelden','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'Ihr Unternehmen','app.logout':'Abmelden','app.version':'Your Business v1.2.3',
     'settings.title':'Einstellungen','settings.appearance':'Erscheinungsbild','settings.theme':'Interface-Thema',
     'settings.dark':'🌙 Dunkel','settings.light':'☀️ Hell','settings.language':'Sprache',
     'settings.language_label':'App-Sprache',
@@ -236,7 +236,7 @@ const T = {
   it: {
     'nav.sales':'Vendite','nav.products':'Prodotti','nav.history':'Cronologia',
     'nav.board':'Bacheca','nav.ai':'Analisi IA','nav.calendar':'Calendario','nav.settings':'Impostazioni','nav.plan':'Il Mio Piano',
-    'app.yourbiz':'La tua attività','app.logout':'Esci','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'La tua attività','app.logout':'Esci','app.version':'Your Business v1.2.3',
     'settings.title':'Impostazioni','settings.appearance':'Aspetto','settings.theme':'Tema interfaccia',
     'settings.dark':'🌙 Scuro','settings.light':'☀️ Chiaro','settings.language':'Lingua',
     'settings.language_label':'Lingua dell\'app',
@@ -277,7 +277,7 @@ const T = {
   zh: {
     'nav.sales':'销售','nav.products':'产品','nav.history':'历史',
     'nav.board':'看板','nav.ai':'AI分析','nav.calendar':'日历','nav.settings':'设置','nav.plan':'我的计划',
-    'app.yourbiz':'我的业务','app.logout':'退出登录','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'我的业务','app.logout':'退出登录','app.version':'Your Business v1.2.3',
     'settings.title':'设置','settings.appearance':'外观','settings.theme':'界面主题',
     'settings.dark':'🌙 深色','settings.light':'☀️ 浅色','settings.language':'语言',
     'settings.language_label':'应用语言',
@@ -318,7 +318,7 @@ const T = {
   ja: {
     'nav.sales':'販売','nav.products':'製品','nav.history':'履歴',
     'nav.board':'ボード','nav.ai':'AI分析','nav.calendar':'カレンダー','nav.settings':'設定','nav.plan':'マイプラン',
-    'app.yourbiz':'マイビジネス','app.logout':'サインアウト','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'マイビジネス','app.logout':'サインアウト','app.version':'Your Business v1.2.3',
     'settings.title':'設定','settings.appearance':'外観','settings.theme':'インターフェーステーマ',
     'settings.dark':'🌙 ダーク','settings.light':'☀️ ライト','settings.language':'言語',
     'settings.language_label':'アプリの言語',
@@ -359,7 +359,7 @@ const T = {
   ar: {
     'nav.sales':'المبيعات','nav.products':'المنتجات','nav.history':'السجل',
     'nav.board':'اللوحة','nav.ai':'تحليل ذكاء اصطناعي','nav.calendar':'التقويم','nav.settings':'الإعدادات','nav.plan':'خطتي',
-    'app.yourbiz':'نشاطي التجاري','app.logout':'تسجيل الخروج','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'نشاطي التجاري','app.logout':'تسجيل الخروج','app.version':'Your Business v1.2.3',
     'settings.title':'الإعدادات','settings.appearance':'المظهر','settings.theme':'سمة الواجهة',
     'settings.dark':'🌙 داكن','settings.light':'☀️ فاتح','settings.language':'اللغة',
     'settings.language_label':'لغة التطبيق',
@@ -400,7 +400,7 @@ const T = {
   ko: {
     'nav.sales':'판매','nav.products':'제품','nav.history':'내역',
     'nav.board':'보드','nav.ai':'AI 분석','nav.calendar':'캘린더','nav.settings':'설정','nav.plan':'내 플랜',
-    'app.yourbiz':'내 사업','app.logout':'로그아웃','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'내 사업','app.logout':'로그아웃','app.version':'Your Business v1.2.3',
     'settings.title':'설정','settings.appearance':'외관','settings.theme':'인터페이스 테마',
     'settings.dark':'🌙 다크','settings.light':'☀️ 라이트','settings.language':'언어',
     'settings.language_label':'앱 언어',
@@ -441,7 +441,7 @@ const T = {
   ru: {
     'nav.sales':'Продажи','nav.products':'Продукты','nav.history':'История',
     'nav.board':'Доска','nav.ai':'ИИ-анализ','nav.calendar':'Календарь','nav.settings':'Настройки','nav.plan':'Мой план',
-    'app.yourbiz':'Мой бизнес','app.logout':'Выйти','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'Мой бизнес','app.logout':'Выйти','app.version':'Your Business v1.2.3',
     'settings.title':'Настройки','settings.appearance':'Внешний вид','settings.theme':'Тема интерфейса',
     'settings.dark':'🌙 Тёмная','settings.light':'☀️ Светлая','settings.language':'Язык',
     'settings.language_label':'Язык приложения',
@@ -482,7 +482,7 @@ const T = {
   nl: {
     'nav.sales':'Verkoop','nav.products':'Producten','nav.history':'Geschiedenis',
     'nav.board':'Bord','nav.ai':'AI-analyse','nav.calendar':'Kalender','nav.settings':'Instellingen','nav.plan':'Mijn Plan',
-    'app.yourbiz':'Mijn bedrijf','app.logout':'Uitloggen','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'Mijn bedrijf','app.logout':'Uitloggen','app.version':'Your Business v1.2.3',
     'settings.title':'Instellingen','settings.appearance':'Uiterlijk','settings.theme':'Interface thema',
     'settings.dark':'🌙 Donker','settings.light':'☀️ Licht','settings.language':'Taal',
     'settings.language_label':'App-taal',
@@ -523,7 +523,7 @@ const T = {
   pl: {
     'nav.sales':'Sprzedaż','nav.products':'Produkty','nav.history':'Historia',
     'nav.board':'Tablica','nav.ai':'Analiza AI','nav.calendar':'Kalendarz','nav.settings':'Ustawienia','nav.plan':'Mój Plan',
-    'app.yourbiz':'Mój biznes','app.logout':'Wyloguj','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'Mój biznes','app.logout':'Wyloguj','app.version':'Your Business v1.2.3',
     'settings.title':'Ustawienia','settings.appearance':'Wygląd','settings.theme':'Motyw interfejsu',
     'settings.dark':'🌙 Ciemny','settings.light':'☀️ Jasny','settings.language':'Język',
     'settings.language_label':'Język aplikacji',
@@ -564,7 +564,7 @@ const T = {
   tr: {
     'nav.sales':'Satışlar','nav.products':'Ürünler','nav.history':'Geçmiş',
     'nav.board':'Tahta','nav.ai':'YZ Analizi','nav.calendar':'Takvim','nav.settings':'Ayarlar','nav.plan':'Planım',
-    'app.yourbiz':'İşletmem','app.logout':'Çıkış yap','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'İşletmem','app.logout':'Çıkış yap','app.version':'Your Business v1.2.3',
     'settings.title':'Ayarlar','settings.appearance':'Görünüm','settings.theme':'Arayüz teması',
     'settings.dark':'🌙 Koyu','settings.light':'☀️ Açık','settings.language':'Dil',
     'settings.language_label':'Uygulama dili',
@@ -605,7 +605,7 @@ const T = {
   hi: {
     'nav.sales':'बिक्री','nav.products':'उत्पाद','nav.history':'इतिहास',
     'nav.board':'बोर्ड','nav.ai':'AI विश्लेषण','nav.calendar':'कैलेंडर','nav.settings':'सेटिंग्स','nav.plan':'मेरी योजना',
-    'app.yourbiz':'मेरा व्यवसाय','app.logout':'लॉग आउट','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'मेरा व्यवसाय','app.logout':'लॉग आउट','app.version':'Your Business v1.2.3',
     'settings.title':'सेटिंग्स','settings.appearance':'दिखावट','settings.theme':'इंटरफ़ेस थीम',
     'settings.dark':'🌙 डार्क','settings.light':'☀️ लाइट','settings.language':'भाषा',
     'settings.language_label':'ऐप भाषा',
@@ -646,7 +646,7 @@ const T = {
   sv: {
     'nav.sales':'Försäljning','nav.products':'Produkter','nav.history':'Historik',
     'nav.board':'Tavla','nav.ai':'AI-analys','nav.calendar':'Kalender','nav.settings':'Inställningar','nav.plan':'Min Plan',
-    'app.yourbiz':'Mitt företag','app.logout':'Logga ut','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'Mitt företag','app.logout':'Logga ut','app.version':'Your Business v1.2.3',
     'settings.title':'Inställningar','settings.appearance':'Utseende','settings.theme':'Gränssnittstema',
     'settings.dark':'🌙 Mörk','settings.light':'☀️ Ljus','settings.language':'Språk',
     'settings.language_label':'Appens språk',
@@ -687,7 +687,7 @@ const T = {
   no: {
     'nav.sales':'Salg','nav.products':'Produkter','nav.history':'Historikk',
     'nav.board':'Tavle','nav.ai':'AI-analyse','nav.calendar':'Kalender','nav.settings':'Innstillinger','nav.plan':'Min Plan',
-    'app.yourbiz':'Min bedrift','app.logout':'Logg ut','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'Min bedrift','app.logout':'Logg ut','app.version':'Your Business v1.2.3',
     'settings.title':'Innstillinger','settings.appearance':'Utseende','settings.theme':'Grensesnittema',
     'settings.dark':'🌙 Mørk','settings.light':'☀️ Lys','settings.language':'Språk',
     'settings.language_label':'Appspråk',
@@ -728,7 +728,7 @@ const T = {
   da: {
     'nav.sales':'Salg','nav.products':'Produkter','nav.history':'Historik',
     'nav.board':'Tavle','nav.ai':'AI-analyse','nav.calendar':'Kalender','nav.settings':'Indstillinger','nav.plan':'Min Plan',
-    'app.yourbiz':'Min virksomhed','app.logout':'Log ud','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'Min virksomhed','app.logout':'Log ud','app.version':'Your Business v1.2.3',
     'settings.title':'Indstillinger','settings.appearance':'Udseende','settings.theme':'Grænsefladetema',
     'settings.dark':'🌙 Mørk','settings.light':'☀️ Lys','settings.language':'Sprog',
     'settings.language_label':'App-sprog',
@@ -769,7 +769,7 @@ const T = {
   fi: {
     'nav.sales':'Myynti','nav.products':'Tuotteet','nav.history':'Historia',
     'nav.board':'Taulu','nav.ai':'AI-analyysi','nav.calendar':'Kalenteri','nav.settings':'Asetukset','nav.plan':'Oma Suunnitelma',
-    'app.yourbiz':'Yritykseni','app.logout':'Kirjaudu ulos','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'Yritykseni','app.logout':'Kirjaudu ulos','app.version':'Your Business v1.2.3',
     'settings.title':'Asetukset','settings.appearance':'Ulkoasu','settings.theme':'Käyttöliittymäteema',
     'settings.dark':'🌙 Tumma','settings.light':'☀️ Vaalea','settings.language':'Kieli',
     'settings.language_label':'Sovelluksen kieli',
@@ -810,7 +810,7 @@ const T = {
   el: {
     'nav.sales':'Πωλήσεις','nav.products':'Προϊόντα','nav.history':'Ιστορικό',
     'nav.board':'Πίνακας','nav.ai':'Ανάλυση ΑΙ','nav.calendar':'Ημερολόγιο','nav.settings':'Ρυθμίσεις','nav.plan':'Το Πλάνο Μου',
-    'app.yourbiz':'Η επιχείρησή μου','app.logout':'Αποσύνδεση','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'Η επιχείρησή μου','app.logout':'Αποσύνδεση','app.version':'Your Business v1.2.3',
     'settings.title':'Ρυθμίσεις','settings.appearance':'Εμφάνιση','settings.theme':'Θέμα διεπαφής',
     'settings.dark':'🌙 Σκοτεινό','settings.light':'☀️ Φωτεινό','settings.language':'Γλώσσα',
     'settings.language_label':'Γλώσσα εφαρμογής',
@@ -851,7 +851,7 @@ const T = {
   he: {
     'nav.sales':'מכירות','nav.products':'מוצרים','nav.history':'היסטוריה',
     'nav.board':'לוח','nav.ai':'ניתוח AI','nav.calendar':'לוח שנה','nav.settings':'הגדרות','nav.plan':'התוכנית שלי',
-    'app.yourbiz':'העסק שלי','app.logout':'התנתק','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'העסק שלי','app.logout':'התנתק','app.version':'Your Business v1.2.3',
     'settings.title':'הגדרות','settings.appearance':'מראה','settings.theme':'ערכת נושא ממשק',
     'settings.dark':'🌙 כהה','settings.light':'☀️ בהיר','settings.language':'שפה',
     'settings.language_label':'שפת האפליקציה',
@@ -892,7 +892,7 @@ const T = {
   ro: {
     'nav.sales':'Vânzări','nav.products':'Produse','nav.history':'Istoric',
     'nav.board':'Tablă','nav.ai':'Analiză IA','nav.calendar':'Calendar','nav.settings':'Setări','nav.plan':'Planul Meu',
-    'app.yourbiz':'Afacerea mea','app.logout':'Deconectare','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'Afacerea mea','app.logout':'Deconectare','app.version':'Your Business v1.2.3',
     'settings.title':'Setări','settings.appearance':'Aspect','settings.theme':'Temă interfață',
     'settings.dark':'🌙 Întunecat','settings.light':'☀️ Deschis','settings.language':'Limbă',
     'settings.language_label':'Limba aplicației',
@@ -933,7 +933,7 @@ const T = {
   cs: {
     'nav.sales':'Prodej','nav.products':'Produkty','nav.history':'Historie',
     'nav.board':'Tabule','nav.ai':'AI analýza','nav.calendar':'Kalendář','nav.settings':'Nastavení','nav.plan':'Můj Plán',
-    'app.yourbiz':'Můj podnik','app.logout':'Odhlásit se','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'Můj podnik','app.logout':'Odhlásit se','app.version':'Your Business v1.2.3',
     'settings.title':'Nastavení','settings.appearance':'Vzhled','settings.theme':'Téma rozhraní',
     'settings.dark':'🌙 Tmavé','settings.light':'☀️ Světlé','settings.language':'Jazyk',
     'settings.language_label':'Jazyk aplikace',
@@ -974,7 +974,7 @@ const T = {
   hu: {
     'nav.sales':'Értékesítés','nav.products':'Termékek','nav.history':'Előzmények',
     'nav.board':'Tábla','nav.ai':'AI elemzés','nav.calendar':'Naptár','nav.settings':'Beállítások','nav.plan':'Az én tervem',
-    'app.yourbiz':'Vállalkozásom','app.logout':'Kijelentkezés','app.version':'Your Business v1.2.2',
+    'app.yourbiz':'Vállalkozásom','app.logout':'Kijelentkezés','app.version':'Your Business v1.2.3',
     'settings.title':'Beállítások','settings.appearance':'Megjelenés','settings.theme':'Felület téma',
     'settings.dark':'🌙 Sötét','settings.light':'☀️ Világos','settings.language':'Nyelv',
     'settings.language_label':'Alkalmazás nyelve',

@@ -100,10 +100,13 @@ function AppInner() {
             return
           }
         } catch (_) {}
+        // Open the per-user database before doing anything else
+        await window.api.db.switchUser(user.uid, user.email)
         setAuthUser(user)
-        // Initialize entitlements as soon as we have the email
         refreshEnts(user.email)
       } else {
+        // Close user DB on logout so no data leaks to the next session
+        await window.api.db.closeUser().catch(() => {})
         setAuthUser(null)
         setEnts(DEFAULT_ENTS)
       }
@@ -196,7 +199,7 @@ function AppInner() {
               </button>
             )}
             <button
-              onClick={() => signOut(auth)}
+              onClick={async () => { await window.api.db.closeUser().catch(() => {}); signOut(auth) }}
               className="w-full text-xs text-gray-400 hover:text-red-500 transition-colors text-center py-1"
             >
               {t('app.logout')}
